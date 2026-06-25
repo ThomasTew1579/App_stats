@@ -1,0 +1,579 @@
+creer une app web complete en js vanilla, html et css
+descitption de l'app:
+- le but est d'importer des fichier .xlsx puis de les mapper dans une interface web avant de les analyser avec la librairie que j'ai mis dans le répertoire
+- l'interface est repreésenté par un tableau de donnée
+- posibilité d'avoir plusieur tableau accessible depuis une bar d'onglet
+- possibilité de modifier le nom des tableau 
+- possibilité d'ajouter les info d'un fichier a un tableau existant en utilisant le meme mapping
+- le mapping permet de choisir les information du fichier a afficher : 
+    - a l'import d'un fichier, une modal contextuel s'ouvre et contient :
+        - un selecteur qui permet de choisir si le fichier doit etre importer dans un nouveau tableau ou a ajouter dans un tableau deja existant ou de merge un tableau avec un rapport du nombre de ligne importé, le nombre de ligne dont des veleur ont été remplacé en se basant sur la colonne ID
+        - un selecteur de ligne pour définir la ligne de titre des colonnes, si la ligne selectionné est la ligne 2, la ligne 1 ne sera pas prise en compte
+        - une liste des information contenu dans les colonnes avec un systeme de case a cocher pour definir les colonnes a afficher dans l'interface 
+        - pour chaque colonnes selectionnées :
+            - un selecteur qui permet de lier chaque colonne a celle existante dans le cas d'un ajout a un tableau exitant 
+            - si c'est un nouveau tableau, un systeme de formateur d'information : 
+                - un formateur de string en date qui fonctionnerait de cette façon : si l'infromation dans la colonne est sous cette forme "03/10/2025 13:24", permettre de choisir le mapping des information temporel de la string sous cette frome "DD/MM/YYYY HH:mm" qui sera convertie en date en TS puis affiché de differentes façon au choix
+                - un formateur de string en nombre et retourner un message d'avertissement si une des valeur ne sont pas convertie
+                - un formateur pour transformer des string en uppurcase
+        - un bouton pour importer 
+- la posibiliter de modifier le mapping et le formatage de chaque colonnes meme apres l'import
+- pour chaque tableau, une page de statistique qu'on fera dans un second temps
+- ajoute du style simple et sombre pour toute l'interface
+- 
+
+================================================================================
+RAPPORT DE REALISATION — 23/06/2025
+================================================================================
+
+FICHIERS CREES
+--------------
+- index.html   : structure de l'application (header, barre d'onglets, vues Données/Statistiques, modales)
+- styles.css   : thème sombre (palette #1a1a2e / #16213e / accent #e94560)
+- app.js       : logique métier complète en JavaScript vanilla
+- xlsx.full.min.js : librairie SheetJS déjà présente (utilisée pour le parsing .xlsx)
+
+LANCEMENT
+---------
+Ouvrir index.html dans un navigateur (double-clic ou serveur local).
+Aucune dépendance npm requise.
+
+FONCTIONNALITES IMPLEMENTEES
+----------------------------
+
+1. Import de fichiers .xlsx
+   - Bouton « Importer un fichier .xlsx » dans l'en-tête
+   - Lecture via SheetJS (première feuille du classeur)
+   - Modal contextuelle à l'import avec aperçu des premières lignes
+
+2. Barre d'onglets multi-tableaux
+   - Un onglet par tableau importé
+   - Renommage inline (champ éditable dans l'onglet)
+   - Fermeture d'un onglet (×) si plusieurs tableaux existent
+   - Bascule entre tableaux au clic
+
+3. Modal d'import — mapping
+   - Mode d'import :
+     * Nouveau tableau
+     * Ajouter à un tableau existant (colonnes mappables)
+     * Fusionner par colonne ID (rapport lignes ajoutées / remplacées)
+   - Sélecteur de ligne de titre (lignes au-dessus ignorées)
+   - Aperçu avec surbrillance de la ligne de titre choisie
+   - Liste des colonnes avec cases à cocher
+   - Pour chaque colonne cochée :
+     * Lien vers colonne existante (modes ajout/fusion)
+     * Formateurs (nouveau tableau ou reconfiguration) :
+       - Date : format source (ex. DD/MM/YYYY HH:mm) → timestamp → format d'affichage
+       - Nombre : conversion avec avertissement si échec
+       - Majuscules : transformation uppercase
+   - Bouton Importer avec rapport post-import
+
+4. Affichage des données
+   - Tableau HTML scrollable avec en-têtes sticky
+   - Compteur lignes / colonnes
+   - Application des formateurs à l'affichage
+
+5. Modification post-import
+   - Bouton « Configurer les colonnes »
+   - Modal permettant de renommer les colonnes et modifier les formateurs
+
+6. Page Statistiques
+   - Onglet « Statistiques » en bas de page
+   - Placeholder conforme à la consigne (« second temps »)
+
+7. Style sombre
+   - Interface cohérente : fond sombre, accents rouges, modales, warnings/rapports colorés
+
+NON IMPLEMENTE (volontairement)
+-------------------------------
+- Analyses statistiques avancées (prévu phase 2)
+- Persistance localStorage / export
+- Support multi-feuilles Excel (seule la 1re feuille est lue)
+- Édition inline des cellules dans le tableau
+
+NOTES TECHNIQUES
+----------------
+- État en mémoire : tableaux { id, name, columns[], rows[] }
+- Chaque colonne : { id, name, sourceKey, formatter }
+- Fusion : comparaison sur la colonne ID sélectionnée ; remplacement des valeurs si ID existant
+- Dates stockées en timestamp numérique après conversion initiale
+
+FIN DU RAPPORT
+================================================================================
+
+
+================================================================================
+RAPPORT DE REALISATION — 23/06/2025 (mise à jour statistiques)
+================================================================================
+
+CONSIGNES TRAITEES
+------------------
+1. Champs date : format source et format d'affichage visibles uniquement si « Date » est sélectionné (corrigé précédemment)
+2. Barre Données / Statistiques fixée en bas de l'écran (corrigé précédemment)
+3. Page statistiques : système de compteurs via filtres empilables
+
+FICHIER AJOUTE
+--------------
+- stats.js : moteur de filtrage, interface des piles, calendrier date/heure, export/import JSON
+
+MODIFICATIONS
+-----------
+- index.html : UI statistiques, modale calendrier/horloge, modale import JSON
+- styles.css : styles piles de filtres, calendrier, tableaux de résultats
+- app.js : exposition AppCore, filterStacks par tableau, branchement stats
+
+FONCTIONNALITES STATISTIQUES
+----------------------------
+
+Piles de filtres empilables
+- Bouton « + Nouvelle pile » pour créer plusieurs compteurs indépendants
+- Nom de pile modifiable
+- Filtres appliqués séquentiellement (ET logique)
+- Réordonnancement via boutons ↑ / ↓
+- Compteur « X / Y ligne(s) » après chaque pile
+
+Types de filtres
+- Texte : colonne + mode (contient / commence par / finit par) + mots (un par ligne, OU logique)
+- Valeur exacte : colonne + liste multi-sélection des valeurs distinctes
+- Date : colonne date + avant / après / période + sélecteur calendrier + horloge (défaut : aujourd'hui, minuit)
+- Nombre : supérieur / inférieur / égal / plage
+- Vide / Non vide : colonnes sans ou avec valeur
+
+Résultats
+- Tableau des lignes restantes sous chaque pile (max 200 lignes affichées)
+- Message si aucune ligne ne correspond
+
+Export / Import
+- « Exporter JSON » : copie la config des piles dans le presse-papiers
+- « Importer JSON » : colle et restaure les piles (résolution colonnes par id ou nom)
+
+UTILISATION
+-----------
+1. Importer des données, aller sur l'onglet « Statistiques »
+2. Créer une pile, ajouter des filtres, ajuster l'ordre
+3. Consulter le compteur et le tableau filtré
+4. Exporter pour sauvegarder ou réutiliser sur un autre poste
+
+FIN DU RAPPORT
+================================================================================
+
+FIN DU RAPPORT
+================================================================================
+
+================================================================================
+RAPPORT DE REALISATION — 23/06/2025 (connecteurs de filtres)
+================================================================================
+
+CONSIGNE TRAITEE
+----------------
+Ajout d'un système pour conditionner les filtres entre eux avec un sélecteur
+« ET », « OU », « AVEC », « SANS » entre chaque filtre d'une pile (à partir
+du 2e filtre).
+
+MODIFICATIONS
+-----------
+- stats.js : logique de combinaison des filtres + UI sélecteur de connecteur
+- styles.css : styles du sélecteur et badge connecteur
+
+CONNECTEURS IMPLEMENTES
+-------------------------
+| Connecteur | Comportement |
+|------------|--------------|
+| ET         | Intersection : la ligne doit correspondre au filtre ET aux précédentes |
+| OU         | Union : la ligne peut correspondre à ce filtre ou aux résultats précédents |
+| AVEC       | La ligne doit avoir une valeur non vide dans la colonne ET correspondre au filtre |
+| SANS       | Exclusion : les lignes correspondant à ce filtre sont retirées du résultat |
+
+DETAILS TECHNIQUES
+------------------
+- Propriété `connector` sur chaque filtre (défaut : ET)
+- Sélecteur affiché entre deux filtres dans la pile
+- Badge du connecteur visible dans l'en-tête de chaque filtre (sauf le 1er)
+- Export/import JSON : le connecteur est inclus dans chaque filtre
+- Compatibilité : filtres existants sans connecteur → ET par défaut
+
+FIN DU RAPPORT
+================================================================================
+
+================================================================================
+RAPPORT DE REALISATION — 23/06/2025 (onglets info, filtre mensuel, valeurs)
+================================================================================
+
+CONSIGNES TRAITEES
+------------------
+1. Onglet « Statistiques » renommé en « Filtre courant »
+2. Nouvel onglet « Information » avec métadonnées du fichier importé
+3. Nouvel onglet « Filtre mensuel » avec piles de filtres par mois
+4. Nouvel onglet « Valeur des statistiques » avec matrice mois × piles
+5. Modal de détail au clic sur une valeur (lignes complètes filtrées)
+
+FICHIERS AJOUTES / MODIFIES
+---------------------------
+- info.js (nouveau) : page Information
+- monthly.js (nouveau) : filtre mensuel + matrice des valeurs
+- stats.js : panneaux réutilisables (courant / mensuel), FilterEngine exporté
+- index.html : 5 onglets bas de page, vues et modale détail
+- app.js : navigation multi-vues, sourceFileName, monthlyFilterStacks
+- styles.css : grilles info, matrice valeurs, barre d'onglets scrollable
+
+ONGLET INFORMATION
+------------------
+- Nom du tableau, fichier source, nombre de lignes / colonnes
+- Cellules vides, liste des colonnes avec type
+- Par colonne date : plus ancienne, plus récente, valeurs valides
+- Par colonne nombre : min, max, valeurs valides
+
+ONGLET FILTRE MENSUEL
+---------------------
+- Sélecteur de colonne date pour répartir les lignes par mois
+- Piles de filtres identiques au filtre courant (sans tableau de résultat inline)
+- Comptages reportés dans « Valeur des statistiques »
+
+ONGLET VALEUR DES STATISTIQUES
+------------------------------
+- Matrice : lignes = noms des piles, colonnes = mois (ex. Jan 2025)
+- Affichage : totalité / par année / par mois (sélecteurs)
+- Clic sur une valeur → modal avec toutes les lignes filtrées
+
+FIN DU RAPPORT
+================================================================================
+
+FIN DU RAPPORT
+================================================================================
+
+================================================================================
+RAPPORT DE REALISATION — 23/06/2025 (filtres date mensuels)
+================================================================================
+
+CONSIGNES TRAITEES
+------------------
+1. Filtres date du « Filtre mensuel » limités à 3 modes relatifs au mois de la colonne
+2. Comptages du tableau « Valeur des statistiques » alignés sur ces filtres mensuels
+
+MODIFICATIONS
+-----------
+- stats.js : MONTHLY_DATE_MODES, matchMonthlyDateFilter, applyStack avec contexte monthKey
+- monthly.js : computeCellData passe le mois de chaque colonne au moteur de filtres
+- styles.css : hint explicatif sous les filtres date mensuels
+
+MODES DATE MENSUELS
+-------------------
+| Mode | Comportement (pour la colonne Mois du tableau) |
+|------|--------------------------------------------------|
+| Au début du mois | Timestamp exact = 1er du mois à 00:00 |
+| À la fin du mois | Timestamp exact = 1er du mois suivant à 00:00 |
+| Pendant le mois | Entre 1er du mois courant 00:00 et 1er du mois suivant 00:00 (exclus) |
+
+LOGIQUE DE COMPTAGE
+-------------------
+- Pile avec filtre date : évaluation sur toutes les lignes avec le monthKey de la colonne
+- Pile sans filtre date : lignes du mois (colonne de répartition) + autres filtres
+- Modal détail : mêmes lignes que la valeur affichée dans la cellule
+
+FIN DU RAPPORT
+================================================================================
+
+================================================================================
+
+================================================================================
+RAPPORT DE REALISATION — 23/06/2025 (filtres date + graphiques)
+================================================================================
+
+CONSIGNES TRAITEES
+------------------
+1. Filtres date mensuels « début / fin de mois » : sélecteur Avant / Après
+2. Nouvel onglet « Graphiques » avec camembert, colonnes et lignes
+
+MODIFICATIONS
+-----------
+- stats.js : monthlyDateCompare (avant/après), UI conditionnelle
+- monthly.js : buildMatrixData exporté pour les graphiques
+- charts.js (nouveau) : rendu Canvas, couleurs, plages de dates
+- index.html, app.js, styles.css : onglet Graphiques
+
+FILTRES DATE MENSUELS (révision)
+--------------------------------
+| Mode | Option Avant | Option Après |
+|------|--------------|--------------|
+| Début du mois (1er minuit) | date < 1er du mois | date ≥ 1er du mois |
+| Fin du mois (1er suivant minuit) | date < 1er suivant | date ≥ 1er suivant |
+| Pendant le mois | (inchangé) plage [1er courant, 1er suivant) |
+
+ONGLET GRAPHIQUES
+-----------------
+- Plage : totalité / année / mois (comme le tableau Valeurs)
+- Choix des piles (cases à cocher) + couleur par pile
+- Types :
+  * Camembert : min. 2 piles, légende à droite, totaux sur la période
+  * Colonnes : abscisse = mois, ordonnée = valeurs, parallèles ou empilées, valeurs inscrites
+  * Lignes : même axes que colonnes, points et valeurs affichés
+- Bouton « Actualiser le graphique »
+
+FIN DU RAPPORT
+================================================================================
+ 
+
+FIN DU RAPPORT
+================================================================================
+
+================================================================================
+RAPPORT DE REALISATION — 23/06/2025 (fonctions de calcul mensuelles)
+================================================================================
+
+CONSIGNE TRAITEE
+----------------
+Bouton « + Fonction de calcul » dans l'onglet Filtre mensuel : lignes de calcul
+entre piles, basées sur leurs résultats (nombre de lignes filtrées).
+
+MODIFICATIONS
+-----------
+- monthly.js : monthlyCalculations, UI cartes calcul, buildMatrixData étendu
+- index.html : bouton « + Fonction de calcul »
+- app.js : monthlyCalculations[] à la création d'un tableau
+- charts.js : séries calcul incluses dans les graphiques
+- styles.css : styles cartes calcul
+
+OPERATIONS DISPONIBLES
+----------------------
+| Opération | Formule | Piles |
+|-----------|---------|-------|
+| Addition | A + B + … | Plusieurs (cases à cocher) |
+| Soustraction | A − B | 2 |
+| Différence | \|A − B\| | 2 |
+| Multiplication | A × B × … | Plusieurs |
+| Division | A ÷ B | 2 |
+| Ratio | (A / B) × 100 % | 2 |
+
+INTEGRATION
+-----------
+- Tableau « Valeur des statistiques » : lignes calcul marquées « ƒ »
+- Graphiques : calculs sélectionnables avec couleur
+- Clic sur une valeur calculée → détail de la formule et des composantes
+
+FIN DU RAPPORT
+================================================================================
+
+
+pour optimiser le chargement de la page des graphique :
+   - de base le selecteur de plage de date est sur la derniere année
+   - seul la premiere pile de filtre est affiché
+
+ajoute la possibilité d'exporter et d'importer des piles de filtres en json avec un mapping des colonnes 
+
+ajoute une foncionnalité pour generer un export des donnée sous forme de pdf, par exemple pour une impression en paysage des tableau ou des graphique comme un rapport
+
+================================================================================
+RAPPORT DE REALISATION — 23/06/2025 (graphiques, export JSON, PDF)
+================================================================================
+
+CONSIGNES TRAITEES
+------------------
+1. Optimisation chargement page Graphiques : dernière année par défaut, 1re pile seule
+2. Export / import JSON des piles avec mapping des colonnes (courant + mensuel + calculs)
+3. Export rapport PDF paysage (tableau valeurs + graphique)
+
+MODIFICATIONS
+-----------
+- charts.js : periodMode « year » par défaut, dernière année disponible, seule la 1re pile
+  de filtre cochée (calculs décochés)
+- stats.js : export JSON v2 (columns, filterStacks, monthlyFilterStacks, monthlyCalculations,
+  monthDateColumn) ; import v1/v2 avec résolution colonnes par id ou nom ; boutons mensuels
+- monthly.js : ensureMonthlyConfig exposé pour l'import
+- pdf-export.js (nouveau) : fenêtre d'impression paysage (@page landscape)
+- index.html : bouton « Exporter rapport PDF », export/import JSON onglet mensuel
+- app.js : activation du bouton PDF quand un tableau est chargé
+
+GRAPHIQUES — CHARGEMENT PAR DEFAUT
+----------------------------------
+- Plage de dates : « Par année », dernière année contenant des données
+- Piles affichées : uniquement la première pile de filtre mensuel (pas les calculs)
+- Réinitialisation des préférences à chaque changement de tableau actif
+
+EXPORT / IMPORT JSON (v2)
+-------------------------
+Structure exportée :
+- columns[] : id, name, sourceKey, formatter (référence mapping)
+- filterStacks[] : piles filtre courant
+- monthlyFilterStacks[] : piles filtre mensuel
+- monthlyCalculations[] : name, op, stackNames (référence par nom de pile)
+- monthDateColumnId / monthDateColumnName
+
+Chaque filtre inclut columnName en plus de columnId pour réimport sur un autre poste
+ou après remapping des colonnes. Compatible avec les exports v1 (stacks uniquement).
+
+Boutons « Exporter JSON » / « Importer JSON » : onglets Filtre courant et Filtre mensuel.
+
+EXPORT PDF
+----------
+- Bouton en-tête « Exporter rapport PDF »
+- Ouvre une fenêtre d'impression paysage avec :
+  * Métadonnées (nom tableau, fichier source, date)
+  * Liste des piles courantes et mensuelles
+  * Tableau des valeurs (dernière année)
+  * Capture du canvas graphique si disponible
+- L'utilisateur enregistre via « Imprimer → Enregistrer au format PDF » du navigateur
+
+FIN DU RAPPORT
+================================================================================
+
+dans le tableau des valeur :
+   - ajouter une colonnes apres le titre qui contiens une case a cocher pour selectionner les lignes a garder sur le rapport pdf
+   - la selection de la plage de date doit etre celle exporté dans le pdf
+
+enleve la section pile de filtre dans le rapport pdf
+
+================================================================================
+RAPPORT DE REALISATION — 23/06/2025 (valeurs PDF + rapport)
+================================================================================
+
+CONSIGNES TRAITEES
+------------------
+1. Colonne « PDF » avec case à cocher par ligne dans le tableau Valeurs
+2. Plage de dates du PDF = sélection de l'onglet Valeurs (totalité / année / mois)
+3. Suppression de la section « Piles de filtres » dans le rapport PDF
+
+MODIFICATIONS
+-----------
+- monthly.js : colonne PDF après « Pile », état pdfRowSelection, getValuesPeriodState(),
+  getPdfSelectedSeriesIds() — toutes les lignes cochées par défaut
+- pdf-export.js : utilise la plage Valeurs et n'exporte que les lignes cochées ;
+  section piles de filtres retirée
+- styles.css : styles colonne PDF (cases à cocher centrées)
+
+TABLEAU VALEURS — SELECTION PDF
+-------------------------------
+| Pile | PDF | Jan 2025 | Fév 2025 | … |
+|------|-----|----------|----------|---|
+| Pile 1 | ☑ | … | … | … |
+| Calcul ƒ | ☑ | … | … | … |
+
+- Case cochée = ligne incluse dans le rapport PDF
+- Par défaut : toutes les lignes cochées
+- La sélection est conservée tant que la pile / le calcul existe
+
+RAPPORT PDF (révision)
+----------------------
+- Plage affichée : identique au sélecteur « Affichage » de l'onglet Valeurs
+- Tableau : uniquement les lignes cochées dans la colonne PDF
+- Graphique : capture du canvas (inchangé)
+- Plus de liste des piles de filtres
+
+FIN DU RAPPORT
+================================================================================
+
+
+sur les ligne de calcul dans les filtre mensuel, possibilité d'utiliser la valeur des autres lignes de calcul
+
+================================================================================
+RAPPORT DE REALISATION — 23/06/2025 (calculs sur calculs)
+================================================================================
+
+CONSIGNE TRAITEE
+----------------
+Les lignes de calcul du filtre mensuel peuvent utiliser comme opérandes :
+- les piles de filtres (comptages, comme avant)
+- les autres lignes de calcul définies au-dessus dans la liste
+
+MODIFICATIONS
+-----------
+- monthly.js : modèle operands[] ({ type: 'stack'|'calc', id }), résolution récursive
+  avec mémoïsation, UI avec groupes Piles / Calculs, compatibilité stackIds legacy
+- stats.js : export/import JSON operands (type + name), rétrocompat stackNames
+- styles.css : libellés de groupes d'opérandes
+
+REGLES
+------
+- Un calcul ne peut référencer que les calculs placés AVANT lui (pas de récursion circulaire)
+- Opérations n-aires (addition, multiplication) : cases à cocher piles + calculs précédents
+- Opérations binaires (soustraction, division, ratio…) : listes déroulantes avec optgroups
+- Modal détail : affiche la valeur résolue de chaque opérande (lignes ou résultat calcul)
+- Export JSON : operands[{ type, name }] en plus de stackNames pour compatibilité
+
+EXEMPLE
+-------
+Calcul 1 : Addition → Pile A + Pile B
+Calcul 2 : Ratio → Calcul 1 ÷ Pile C  →  pourcentage du total
+
+FIN DU RAPPORT
+================================================================================
+
+
+
+refais tout le projet en Vue + vite TS en optimisant les performance de traitement et d'affichage et prevoyant une mise en ligne via gh-page
+
+================================================================================
+RAPPORT DE REALISATION — 25/06/2025 (migration Vue 3 + Vite + TypeScript)
+================================================================================
+
+CONSIGNE TRAITEE
+----------------
+Réécriture complète de l'application en Vue 3 + Vite + TypeScript, avec
+optimisations de performance et configuration pour déploiement GitHub Pages.
+
+ARCHITECTURE
+------------
+- Vue 3 (Composition API) + Pinia pour l'état global
+- TypeScript strict sur toute la logique métier
+- Vite 7 pour le bundling et le HMR
+- Ancienne version vanilla JS conservée dans legacy/
+
+STRUCTURE CREEE
+---------------
+- package.json, vite.config.ts, tsconfig*.json
+- src/main.ts, App.vue
+- src/types/index.ts — modèles TypeScript
+- src/core/ — moteurs métier (filtres, mensuel, graphiques, PDF, XLSX)
+- src/stores/appStore.ts — état Pinia (tableaux, import, filtres, graphiques)
+- src/components/ — en-tête, onglets, modales, vues
+- src/assets/styles.css — thème sombre (reprise de l'existant)
+- .github/workflows/deploy.yml — CI GitHub Pages
+- README.md — instructions dev / build / deploy
+
+FONCTIONNALITES PORTEES (parite avec legacy/)
+---------------------------------------------
+1. Import .xlsx (SheetJS via npm xlsx) — modal mapping complet
+2. Multi-tableaux avec onglets renommables / fermables
+3. Modes import : nouveau / ajout / fusion par ID
+4. Formateurs colonnes (date, nombre, majuscules) + config post-import
+5. Filtre courant — piles empilables, connecteurs ET/OU/AVEC/SANS
+6. Information — métadonnées fichier et colonnes
+7. Filtre mensuel — piles, calculs (y compris calculs sur calculs)
+8. Valeurs — matrice mois × piles, colonne PDF, modal détail
+9. Graphiques — colonnes / lignes / camembert, plage par défaut dernière année
+10. Export / import JSON v2 avec mapping colonnes
+11. Export rapport PDF paysage (plage Valeurs + lignes PDF cochées)
+
+OPTIMISATIONS PERFORMANCE
+-------------------------
+- shallowRef pour les tableaux de données volumineux (évite reactivité profonde)
+- TableView virtualisé : rendu uniquement des lignes visibles (+ overscan)
+- defineAsyncComponent pour Stats, Monthly, Values, Charts (code-splitting)
+- Chunk manuel xlsx séparé du bundle principal
+- Logique métier pure en modules TS (testable, sans DOM)
+- Computed Vue pour matrices et comptages (cache réactif)
+
+GITHUB PAGES
+------------
+- vite.config.ts : base configurable via BASE_PATH
+- Script npm run deploy (gh-pages)
+- Workflow GitHub Actions : build + deploy-pages sur push master/main
+- BASE_PATH auto = /nom-du-repo/ en CI
+
+LANCEMENT LOCAL
+---------------
+  npm install
+  npm run dev
+
+BUILD / DEPLOI
+--------------
+  npm run build
+  BASE_PATH=/App_stats-TS/ npm run build   # adapter au nom du repo
+  npm run deploy
+
+FICHIERS LEGACY
+---------------
+- legacy/ : app.js, stats.js, monthly.js, info.js, charts.js, pdf-export.js,
+  styles.css, xlsx.full.min.js (reference, non utilisée par la nouvelle app)
+
+FIN DU RAPPORT
+================================================================================
