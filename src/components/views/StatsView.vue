@@ -24,7 +24,7 @@ const { activeTable } = storeToRefs(store)
           v-for="stack in activeTable.filterStacks"
           :key="stack.id"
           :stack="stack"
-          :table="activeTable"
+          :table-id="activeTable.id"
           stacks-key="filterStacks"
           :show-results="true"
         />

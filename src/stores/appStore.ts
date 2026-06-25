@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia'
 import { computed, ref, shallowRef, triggerRef } from 'vue'
 import type {
-  AppView, ColumnImportConfig, DataTable, ImportReport, PendingImport,
+  AppView, ColumnImportConfig, DataTable, FilterType, ImportReport, PendingImport,
   PeriodState, ColumnFormatter,
 } from '@/types'
 import { applyFormatter } from '@/core/formatters'
-import { defaultStack } from '@/core/filterEngine'
+import { defaultFilter, defaultStack } from '@/core/filterEngine'
 import { defaultCalculation, ensureMonthlyConfig } from '@/core/monthlyEngine'
 import { exportFiltersJson, importFiltersJson } from '@/core/filterImportExport'
 import { exportPdfReport } from '@/core/pdfExport'
 import { drawChart, type ChartConfig } from '@/core/chartRenderer'
-import { buildMatrixData, getAvailableMonths } from '@/core/monthlyEngine'
+import { buildMatrixData, getAvailableMonths, clearMatrixCache, getChartSeriesList } from '@/core/monthlyEngine'
 import { DEFAULT_CHART_COLORS, uid } from '@/utils/helpers'
 import { getDataRows, getHeadersFromRows } from '@/core/xlsxParser'
 
@@ -54,6 +54,12 @@ export const useAppStore = defineStore('app', () => {
     tables.value.find((t) => t.id === activeTableId.value) ?? null,
   )
 
+  /** Mise à jour immuable — nécessaire avec shallowRef pour déclencher le rendu Vue */
+  function updateTable(tableId: string, updater: (table: DataTable) => DataTable) {
+    tables.value = tables.value.map((t) => (t.id === tableId ? updater(t) : t))
+    clearMatrixCache()
+  }
+
   function setActiveTable(id: string) {
     activeTableId.value = id
   }
@@ -68,6 +74,7 @@ export const useAppStore = defineStore('app', () => {
     const next = [...tables.value]
     next.splice(idx, 1)
     tables.value = next
+    clearMatrixCache()
     if (activeTableId.value === id) {
       activeTableId.value = next[0]?.id ?? null
     }
@@ -109,7 +116,6 @@ export const useAppStore = defineStore('app', () => {
   function executeImport() {
     if (!pendingImport.value) return
     const { rows, fileName } = pendingImport.value
-    const headers = getHeadersFromRows(rows, headerRowIndex.value)
     const dataRows = getDataRows(rows, headerRowIndex.value)
     const configs = columnConfigs.value.filter((c) => c.checked !== false)
 
@@ -161,6 +167,7 @@ export const useAppStore = defineStore('app', () => {
       }
       tables.value = [...tables.value, table]
       activeTableId.value = table.id
+      clearMatrixCache()
       report = { imported: processedRows.length, replaced: 0 }
     } else {
       const target = tables.value.find((t) => t.id === targetTableId.value)
@@ -216,6 +223,7 @@ export const useAppStore = defineStore('app', () => {
       }
 
       activeTableId.value = target.id
+      clearMatrixCache()
       triggerRef(tables)
     }
 
@@ -249,6 +257,7 @@ export const useAppStore = defineStore('app', () => {
       }
     }
 
+    clearMatrixCache()
     triggerRef(tables)
     showColumnModal.value = false
     if (warnings.length > 0) {
@@ -259,21 +268,126 @@ export const useAppStore = defineStore('app', () => {
   function addFilterStack(monthly = false) {
     const table = activeTable.value
     if (!table) return
-    if (monthly) {
-      ensureMonthlyConfig(table)
-      table.monthlyFilterStacks.push(defaultStack())
-    } else {
-      table.filterStacks.push(defaultStack())
-    }
-    triggerRef(tables)
+    updateTable(table.id, (t) => {
+      const base = monthly ? ensureMonthlyConfig({ ...t, monthlyFilterStacks: [...(t.monthlyFilterStacks ?? [])], monthlyCalculations: [...(t.monthlyCalculations ?? [])] }) : t
+      if (monthly) {
+        return { ...base, monthlyFilterStacks: [...base.monthlyFilterStacks, defaultStack()] }
+      }
+      return { ...t, filterStacks: [...t.filterStacks, defaultStack()] }
+    })
   }
 
   function addMonthlyCalculation() {
     const table = activeTable.value
     if (!table) return
-    ensureMonthlyConfig(table)
-    table.monthlyCalculations.push(defaultCalculation())
-    triggerRef(tables)
+    updateTable(table.id, (t) => {
+      const base = ensureMonthlyConfig({ ...t, monthlyFilterStacks: [...(t.monthlyFilterStacks ?? [])], monthlyCalculations: [...(t.monthlyCalculations ?? [])] })
+      return { ...base, monthlyCalculations: [...base.monthlyCalculations, defaultCalculation()] }
+    })
+  }
+
+  function removeFilterStack(
+    tableId: string,
+    stacksKey: 'filterStacks' | 'monthlyFilterStacks',
+    stackId: string,
+  ) {
+    updateTable(tableId, (t) => ({
+      ...t,
+      [stacksKey]: t[stacksKey].filter((s) => s.id !== stackId),
+    }))
+  }
+
+  function addFilterToStack(
+    tableId: string,
+    stacksKey: 'filterStacks' | 'monthlyFilterStacks',
+    stackId: string,
+    type: FilterType,
+    monthlyContext: boolean,
+  ) {
+    updateTable(tableId, (t) => ({
+      ...t,
+      [stacksKey]: t[stacksKey].map((s) =>
+        s.id !== stackId
+          ? s
+          : { ...s, filters: [...s.filters, defaultFilter(type, t, monthlyContext)] },
+      ),
+    }))
+  }
+
+  function removeFilterFromStack(
+    tableId: string,
+    stacksKey: 'filterStacks' | 'monthlyFilterStacks',
+    stackId: string,
+    filterId: string,
+  ) {
+    updateTable(tableId, (t) => ({
+      ...t,
+      [stacksKey]: t[stacksKey].map((s) =>
+        s.id !== stackId ? s : { ...s, filters: s.filters.filter((f) => f.id !== filterId) },
+      ),
+    }))
+  }
+
+  function moveFilterInStack(
+    tableId: string,
+    stacksKey: 'filterStacks' | 'monthlyFilterStacks',
+    stackId: string,
+    filterId: string,
+    dir: -1 | 1,
+  ) {
+    updateTable(tableId, (t) => ({
+      ...t,
+      [stacksKey]: t[stacksKey].map((s) => {
+        if (s.id !== stackId) return s
+        const i = s.filters.findIndex((f) => f.id === filterId)
+        const j = i + dir
+        if (i < 0 || j < 0 || j >= s.filters.length) return s
+        const filters = [...s.filters]
+        ;[filters[i], filters[j]] = [filters[j], filters[i]]
+        return { ...s, filters }
+      }),
+    }))
+  }
+
+  function updateFilterDate(
+    tableId: string,
+    stacksKey: 'filterStacks' | 'monthlyFilterStacks',
+    stackId: string,
+    filterId: string,
+    field: 'date1' | 'date2',
+    ts: number,
+  ) {
+    updateTable(tableId, (t) => ({
+      ...t,
+      [stacksKey]: t[stacksKey].map((s) =>
+        s.id !== stackId
+          ? s
+          : {
+              ...s,
+              filters: s.filters.map((f) => (f.id !== filterId ? f : { ...f, [field]: ts })),
+            },
+      ),
+    }))
+  }
+
+  function removeMonthlyCalculation(tableId: string, calcId: string) {
+    updateTable(tableId, (t) => ({
+      ...t,
+      monthlyCalculations: t.monthlyCalculations.filter((c) => c.id !== calcId),
+    }))
+  }
+
+  function patchMonthlyCalculation(
+    tableId: string,
+    calcId: string,
+    patch: Partial<import('@/types').MonthlyCalculation>,
+  ) {
+    updateTable(tableId, (t) => ({
+      ...t,
+      monthlyCalculations: t.monthlyCalculations.map((c) =>
+        c.id !== calcId ? c : { ...c, ...patch },
+      ),
+    }))
   }
 
   async function copyFiltersJson() {
@@ -293,6 +407,7 @@ export const useAppStore = defineStore('app', () => {
     if (!table) return
     try {
       importFiltersJson(table, jsonStr)
+      clearMatrixCache()
       triggerRef(tables)
       showFilterImportModal.value = false
     } catch (err) {
@@ -317,10 +432,10 @@ export const useAppStore = defineStore('app', () => {
   function ensureChartStackConfig() {
     const table = activeTable.value
     if (!table) return
-    const matrix = buildMatrixData(table, chartPeriod.value)
-    const firstFilterId = matrix.series.find((s) => !s.isCalculation)?.id
+    const seriesList = getChartSeriesList(table)
+    const firstFilterId = seriesList.find((s) => !s.isCalculation)?.id
     const config = { ...chartStackConfig.value }
-    matrix.series.forEach((series, i) => {
+    seriesList.forEach((series, i) => {
       if (!config[series.id]) {
         config[series.id] = {
           selected: series.id === firstFilterId,
@@ -329,7 +444,7 @@ export const useAppStore = defineStore('app', () => {
       }
     })
     for (const id of Object.keys(config)) {
-      if (!matrix.series.find((s) => s.id === id)) delete config[id]
+      if (!seriesList.find((s) => s.id === id)) delete config[id]
     }
     chartStackConfig.value = config
   }
@@ -342,13 +457,13 @@ export const useAppStore = defineStore('app', () => {
     }
   }
 
-  function drawActiveChart(): string | null {
+  function drawActiveChart(exportImage = false): string | null {
     const table = activeTable.value
     const canvas = chartCanvasRef.value
     if (!table || !canvas) return null
     const matrix = buildMatrixData(table, chartPeriod.value)
     const selected = matrix.series.filter((s) => chartStackConfig.value[s.id]?.selected !== false)
-    return drawChart(canvas, matrix, selected, getChartConfig())
+    return drawChart(canvas, matrix, selected, getChartConfig(), { exportImage })
   }
 
   function exportPdf() {
@@ -357,7 +472,7 @@ export const useAppStore = defineStore('app', () => {
       alert('Aucun tableau à exporter.')
       return
     }
-    const chartImg = drawActiveChart() ?? ''
+    const chartImg = drawActiveChart(true) ?? ''
     const matrix = buildMatrixData(table, valuesPeriod.value)
     const selectedIds = new Set(
       matrix.series
@@ -432,6 +547,14 @@ export const useAppStore = defineStore('app', () => {
     saveColumnSettings,
     addFilterStack,
     addMonthlyCalculation,
+    removeFilterStack,
+    addFilterToStack,
+    removeFilterFromStack,
+    moveFilterInStack,
+    updateFilterDate,
+    removeMonthlyCalculation,
+    patchMonthlyCalculation,
+    updateTable,
     copyFiltersJson,
     importFilters,
     applyChartDefaults,

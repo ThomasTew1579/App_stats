@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, triggerRef } from 'vue'
-import type { DataTable, MonthlyCalculation } from '@/types'
+import { computed, ref } from 'vue'
+import type { MonthlyCalculation } from '@/types'
 import { CALC_OPS, ensureMonthlyConfig, getCalcOperands, isNaryOp } from '@/core/monthlyEngine'
 import { useAppStore } from '@/stores/appStore'
 import FilterStackPanel from '@/components/FilterStackPanel.vue'
@@ -8,6 +8,7 @@ import { storeToRefs } from 'pinia'
 
 const store = useAppStore()
 const { activeTable } = storeToRefs(store)
+const collapsedCalcs = ref<Record<string, boolean>>({})
 
 const table = computed(() => {
   if (activeTable.value) ensureMonthlyConfig(activeTable.value)
@@ -28,13 +29,10 @@ function isOperandSelected(calc: MonthlyCalculation, type: string, id: string) {
 
 function toggleNaryOperand(calc: MonthlyCalculation, type: 'stack' | 'calc', id: string, checked: boolean) {
   const ops = getCalcOperands(calc)
-  if (checked) {
-    calc.operands = [...ops, { type, id }]
-  } else {
-    calc.operands = ops.filter((o) => !(o.type === type && o.id === id))
-  }
-  delete calc.stackIds
-  triggerRef(store.tables as unknown as import('vue').ShallowRef<DataTable[]>)
+  const operands = checked
+    ? [...ops, { type, id }]
+    : ops.filter((o) => !(o.type === type && o.id === id))
+  store.patchMonthlyCalculation(table.value!.id, calc.id, { operands })
 }
 
 function setBinaryOperand(calc: MonthlyCalculation, index: number, val: string) {
@@ -42,9 +40,7 @@ function setBinaryOperand(calc: MonthlyCalculation, index: number, val: string) 
   const parsed = parseOperand(val)
   if (parsed) ops[index] = parsed
   else ops.splice(index, 1)
-  calc.operands = ops.filter(Boolean)
-  delete calc.stackIds
-  triggerRef(store.tables as unknown as import('vue').ShallowRef<DataTable[]>)
+  store.patchMonthlyCalculation(table.value!.id, calc.id, { operands: ops.filter(Boolean) as import('@/types').CalcOperand[] })
 }
 
 function parseOperand(val: string) {
@@ -58,16 +54,17 @@ function formatOperand(ref: { type: string; id: string }) {
   return `${ref.type}:${ref.id}`
 }
 
-function removeCalc(calcId: string) {
-  if (!table.value) return
-  table.value.monthlyCalculations = table.value.monthlyCalculations.filter((c) => c.id !== calcId)
-  triggerRef(store.tables as unknown as import('vue').ShallowRef<DataTable[]>)
+function onOpChange(calc: MonthlyCalculation, op: import('@/types').CalcOp) {
+  store.patchMonthlyCalculation(table.value!.id, calc.id, { op, operands: [] })
 }
 
-function onOpChange(calc: MonthlyCalculation) {
-  calc.operands = []
-  delete calc.stackIds
-  triggerRef(store.tables as unknown as import('vue').ShallowRef<DataTable[]>)
+function patchCalcName(calcId: string, name: string) {
+  store.patchMonthlyCalculation(table.value!.id, calcId, { name })
+}
+
+function onMonthDateChange(columnId: string) {
+  if (!table.value) return
+  store.updateTable(table.value.id, (t) => ({ ...t, monthDateColumnId: columnId }))
 }
 </script>
 
@@ -85,7 +82,11 @@ function onOpChange(calc: MonthlyCalculation) {
       </header>
       <div v-if="table" class="form-group monthly-date-select">
         <label for="month-date-column">Colonne date (répartition par mois)</label>
-        <select id="month-date-column" v-model="table.monthDateColumnId">
+        <select
+          id="month-date-column"
+          :value="table.monthDateColumnId"
+          @change="onMonthDateChange(($event.target as HTMLSelectElement).value)"
+        >
           <option v-for="c in dateColumns" :key="c.id" :value="c.id">{{ c.name }}</option>
           <option v-if="!dateColumns.length" value="">— Aucune colonne date —</option>
         </select>
@@ -96,7 +97,7 @@ function onOpChange(calc: MonthlyCalculation) {
           v-for="stack in table.monthlyFilterStacks"
           :key="stack.id"
           :stack="stack"
-          :table="table"
+          :table-id="table.id"
           stacks-key="monthlyFilterStacks"
           :show-results="false"
           :monthly-context="true"
@@ -105,16 +106,30 @@ function onOpChange(calc: MonthlyCalculation) {
           v-for="(calc, calcIndex) in table.monthlyCalculations"
           :key="calc.id"
           class="calc-stack filter-stack"
+          :class="{ collapsed: collapsedCalcs[calc.id] }"
         >
           <div class="filter-stack-header">
-            <input v-model="calc.name" type="text" class="stack-name calc-name">
+            <button
+              type="button"
+              class="btn-icon btn-stack-collapse"
+              :title="collapsedCalcs[calc.id] ? 'Déplier' : 'Replier'"
+              @click="collapsedCalcs[calc.id] = !collapsedCalcs[calc.id]"
+            >
+              {{ collapsedCalcs[calc.id] ? '▶' : '▼' }}
+            </button>
+            <input
+              :value="calc.name"
+              type="text"
+              class="stack-name calc-name"
+              @change="patchCalcName(calc.id, ($event.target as HTMLInputElement).value.trim() || calc.name)"
+            >
             <span class="stack-count calc-badge">Calcul</span>
-            <button type="button" class="btn-icon btn-calc-remove" @click="removeCalc(calc.id)">×</button>
+            <button type="button" class="btn-icon btn-calc-remove" @click="store.removeMonthlyCalculation(table.id, calc.id)">×</button>
           </div>
-          <div class="filter-stack-body calc-body">
+          <div v-show="!collapsedCalcs[calc.id]" class="filter-stack-body calc-body">
             <div class="calc-editor">
               <label>Opération</label>
-              <select v-model="calc.op" @change="onOpChange(calc)">
+              <select :value="calc.op" @change="onOpChange(calc, ($event.target as HTMLSelectElement).value as import('@/types').CalcOp)">
                 <option v-for="o in CALC_OPS" :key="o.value" :value="o.value">{{ o.label }}</option>
               </select>
               <template v-if="isNaryOp(calc.op)">

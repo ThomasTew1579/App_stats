@@ -40,12 +40,70 @@ export function getRowMonthKey(row: { data: Record<string, unknown> }, table: Da
 }
 
 export function getAvailableMonths(table: DataTable): string[] {
+  const cacheKey = `${table.id}:${table.rows.length}:${table.monthDateColumnId}`
+  const cached = monthsCache.get(cacheKey)
+  if (cached) return cached
+
   const set = new Set<string>()
   for (const row of table.rows) {
     const k = getRowMonthKey(row, table)
     if (k) set.add(k)
   }
-  return [...set].sort()
+  const result = [...set].sort()
+  monthsCache.set(cacheKey, result)
+  if (monthsCache.size > 16) {
+    const first = monthsCache.keys().next().value
+    if (first) monthsCache.delete(first)
+  }
+  return result
+}
+
+const monthsCache = new Map<string, string[]>()
+
+export function getChartSeriesList(table: DataTable) {
+  ensureMonthlyConfig(table)
+  return [
+    ...table.monthlyFilterStacks.map((s) => ({ id: s.id, name: s.name, isCalculation: false })),
+    ...table.monthlyCalculations.map((c) => ({ id: c.id, name: c.name, isCalculation: true })),
+  ]
+}
+
+function buildRowsByMonthIndex(table: DataTable): Map<string, import('@/types').DataRow[]> {
+  const map = new Map<string, import('@/types').DataRow[]>()
+  for (const row of table.rows) {
+    const mk = getRowMonthKey(row, table)
+    if (!mk) continue
+    const bucket = map.get(mk)
+    if (bucket) bucket.push(row as import('@/types').DataRow)
+    else map.set(mk, [row as import('@/types').DataRow])
+  }
+  return map
+}
+
+function stackCountForMonth(
+  table: DataTable,
+  stack: import('@/types').FilterStack,
+  monthKey: string,
+  rowsByMonth: Map<string, import('@/types').DataRow[]>,
+): number {
+  const context = { monthKey, monthlyContext: true }
+  const hasDateFilter = stack.filters.some((f) => f.type === 'date')
+  if (hasDateFilter) {
+    return applyStack(table.rows, stack, table, context).length
+  }
+  const monthRows = rowsByMonth.get(monthKey) ?? []
+  return applyStack(monthRows, stack, table, context).length
+}
+
+function matrixCacheKey(table: DataTable, periodState: PeriodState): string {
+  return `${table.id}|${table.rows.length}|${periodState.periodMode}|${periodState.year}|${periodState.month}|${table.monthDateColumnId}|${table.monthlyFilterStacks.length}|${table.monthlyCalculations.length}`
+}
+
+const matrixCache = new Map<string, MatrixData>()
+
+export function clearMatrixCache() {
+  matrixCache.clear()
+  monthsCache.clear()
 }
 
 export function getRowsForMonth(table: DataTable, monthKey: string) {
@@ -145,14 +203,20 @@ export function getVisibleMonthsForState(table: DataTable, state: PeriodState): 
 }
 
 export function buildMatrixData(table: DataTable, periodState: PeriodState): MatrixData {
+  const key = matrixCacheKey(table, periodState)
+  const hit = matrixCache.get(key)
+  if (hit) return hit
+
   ensureMonthlyConfig(table)
   const months = getVisibleMonthsForState(table, periodState)
+  const rowsByMonth = buildRowsByMonthIndex(table)
+
   const filterSeries = table.monthlyFilterStacks.map((stack) => ({
     id: stack.id,
     name: stack.name,
     isCalculation: false,
     op: null as CalcOp | null,
-    values: months.map((mk) => computeStackCellData(table, stack, mk).count),
+    values: months.map((mk) => stackCountForMonth(table, stack, mk, rowsByMonth)),
   }))
   const calcSeries = table.monthlyCalculations.map((calc) => ({
     id: calc.id,
@@ -164,11 +228,17 @@ export function buildMatrixData(table: DataTable, periodState: PeriodState): Mat
       return value ?? 0
     }),
   }))
-  return {
+  const result: MatrixData = {
     months,
     monthLabels: months.map(formatMonthLabel),
     series: [...filterSeries, ...calcSeries],
   }
+  matrixCache.set(key, result)
+  if (matrixCache.size > 12) {
+    const first = matrixCache.keys().next().value
+    if (first) matrixCache.delete(first)
+  }
+  return result
 }
 
 export function defaultCalculation(): MonthlyCalculation {

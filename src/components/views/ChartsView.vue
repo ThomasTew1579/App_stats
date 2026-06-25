@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useAppStore } from '@/stores/appStore'
 import { storeToRefs } from 'pinia'
-import { buildMatrixData, getAvailableMonths, formatMonthLabel } from '@/core/monthlyEngine'
+import { getAvailableMonths, getChartSeriesList, formatMonthLabel } from '@/core/monthlyEngine'
 import { debounce } from '@/utils/helpers'
 
 const store = useAppStore()
 const { activeTable, chartPeriod, chartType, chartColumnLayout, chartStackConfig, chartCanvasRef } = storeToRefs(store)
 
 const chartMessage = ref('')
+const chartDrawn = ref(false)
+const isDrawing = ref(false)
 
 const years = computed(() => {
   const months = activeTable.value ? getAvailableMonths(activeTable.value) : []
@@ -17,35 +19,49 @@ const years = computed(() => {
 
 const allMonths = computed(() => activeTable.value ? getAvailableMonths(activeTable.value) : [])
 
-const matrix = computed(() =>
-  activeTable.value ? buildMatrixData(activeTable.value, chartPeriod.value) : null,
-)
-
-const selectedCount = computed(() =>
-  matrix.value?.series.filter((s) => chartStackConfig.value[s.id]?.selected !== false).length ?? 0,
+const seriesList = computed(() =>
+  activeTable.value ? getChartSeriesList(activeTable.value) : [],
 )
 
 watch(activeTable, () => {
+  chartDrawn.value = false
   store.applyChartDefaults()
   store.ensureChartStackConfig()
-  draw()
+  chartMessage.value = ''
 }, { immediate: true })
 
-watch([chartPeriod, chartType, chartColumnLayout, chartStackConfig], () => draw(), { deep: true })
+async function draw() {
+  if (!activeTable.value || isDrawing.value) return
+  isDrawing.value = true
+  chartMessage.value = ''
 
-function draw() {
-  if (!activeTable.value) return
-  store.ensureChartStackConfig()
-  if (chartType.value === 'pie' && selectedCount.value < 2) {
+  const selectedIds = seriesList.value.filter(
+    (s) => chartStackConfig.value[s.id]?.selected !== false,
+  )
+
+  if (chartType.value === 'pie' && selectedIds.length < 2) {
     chartMessage.value = 'Le camembert requiert au minimum 2 piles sélectionnées.'
-  } else {
-    chartMessage.value = ''
+    isDrawing.value = false
+    return
   }
-  store.drawActiveChart()
+
+  await nextTick()
+  requestAnimationFrame(() => {
+    store.drawActiveChart(false)
+    chartDrawn.value = true
+    isDrawing.value = false
+  })
 }
 
-const onResize = debounce(draw, 200)
-onMounted(() => window.addEventListener('resize', onResize))
+const onResize = debounce(() => {
+  if (chartDrawn.value) draw()
+}, 250)
+
+onMounted(() => {
+  window.addEventListener('resize', onResize)
+  store.ensureChartStackConfig()
+})
+
 onUnmounted(() => window.removeEventListener('resize', onResize))
 
 function toggleStack(id: string, selected: boolean) {
@@ -112,7 +128,7 @@ function setColor(id: string, color: string) {
           <div class="charts-stack-section">
             <h3>Piles à afficher et couleurs</h3>
             <div class="charts-stack-list">
-              <label v-for="series in matrix?.series ?? []" :key="series.id" class="chart-stack-item">
+              <label v-for="series in seriesList" :key="series.id" class="chart-stack-item">
                 <input
                   type="checkbox"
                   :checked="chartStackConfig[series.id]?.selected !== false"
@@ -127,8 +143,13 @@ function setColor(id: string, color: string) {
               </label>
             </div>
           </div>
-          <button type="button" class="btn btn-primary" @click="draw">Actualiser le graphique</button>
+          <button type="button" class="btn btn-primary" :disabled="isDrawing" @click="draw">
+            {{ isDrawing ? 'Calcul en cours…' : 'Actualiser le graphique' }}
+          </button>
           <p v-if="chartMessage" class="warnings">{{ chartMessage }}</p>
+          <p v-else-if="!chartDrawn" class="filter-hint charts-hint">
+            Réglez les paramètres puis cliquez sur « Actualiser le graphique ».
+          </p>
         </div>
         <div class="charts-canvas-wrap">
           <canvas :ref="(el) => { chartCanvasRef = el as HTMLCanvasElement | null }" />

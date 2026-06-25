@@ -67,9 +67,13 @@ function importStackFilters(stack: { name?: string; filters?: unknown[] }, table
     id: uid(),
     name: stack.name || 'Pile importée',
     filters: ((stack.filters ?? []) as Record<string, unknown>[]).map((f) => {
-      const filter = { ...f, id: uid(), connector: (f.connector as import('@/types').FilterConnector) || 'ET' } as import('@/types').Filter
-      filter.columnId = resolveColumnId(table, f.columnId as string, f.columnName as string)
-      delete (filter as Record<string, unknown>).columnName
+      const { columnName, ...raw } = f
+      const filter = {
+        ...raw,
+        id: uid(),
+        connector: (f.connector as import('@/types').FilterConnector) || 'ET',
+        columnId: resolveColumnId(table, f.columnId as string, columnName as string),
+      } as import('@/types').Filter
       return filter
     }),
   }

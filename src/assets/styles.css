@@ -833,6 +833,11 @@ body {
   margin-top: 0;
 }
 
+.charts-hint {
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
 .calc-stack {
   border-color: var(--success);
 }
@@ -1164,4 +1169,25 @@ body {
 .column-setting-item h4 {
   font-size: 0.9rem;
   margin-bottom: 0.75rem;
+}
+
+/* Repli des piles de filtres */
+.btn-stack-collapse {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  line-height: 1;
+  padding: 0.2rem 0.35rem;
+  color: var(--text-secondary);
+}
+
+.btn-stack-collapse:hover {
+  color: var(--text-primary);
+}
+
+.filter-stack.collapsed .filter-stack-header {
+  border-bottom: none;
+}
+
+.filter-stack.collapsed {
+  border-bottom: 1px solid var(--border);
 }

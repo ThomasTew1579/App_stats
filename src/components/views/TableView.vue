@@ -40,7 +40,9 @@ function cellValue(row: DataRow, col: Column) {
 }
 
 function onScroll(e: Event) {
-  scrollTop.value = (e.target as HTMLElement).scrollTop
+  requestAnimationFrame(() => {
+    scrollTop.value = (e.target as HTMLElement).scrollTop
+  })
 }
 
 function updateViewport() {
