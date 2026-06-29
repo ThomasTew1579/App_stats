@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation — App Stats</title>
+  <meta name="description" content="Guide complet App Stats : import Excel, filtres, statistiques mensuelles, graphiques, presets et export.">
+  <style>
+    :root {
+      --bg: #1a1a2e;
+      --bg2: #16213e;
+      --bg3: #0f3460;
+      --text: #e8e8e8;
+      --muted: #a0a0b0;
+      --accent: #e94560;
+      --accent2: #4ecca3;
+      --border: #2a2a4a;
+      --radius: 8px;
+      --sidebar: 280px;
+      --line: 1.65;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: var(--line);
+      font-size: 1rem;
+    }
+    .skip-link {
+      position: absolute; left: -9999px; top: 0;
+      background: var(--accent); color: #fff; padding: 0.75rem 1rem; z-index: 9999;
+    }
+    .skip-link:focus { left: 0; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: var(--sidebar);
+      flex-shrink: 0;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 1.25rem 0;
+    }
+    .sidebar-brand {
+      padding: 0 1.25rem 1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+    .sidebar-brand h1 { font-size: 1.1rem; color: var(--accent); font-weight: 600; }
+    .sidebar-brand p { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
+    .search-box { padding: 0 1rem 1rem; }
+    .search-box label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.35rem; }
+    .search-box input {
+      width: 100%; padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--bg); color: var(--text); font-size: 0.875rem;
+    }
+    .search-box input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .search-hint { font-size: 0.7rem; color: var(--muted); margin-top: 0.35rem; }
+    .toc { list-style: none; }
+    .toc a {
+      display: block; padding: 0.4rem 1.25rem;
+      color: var(--muted); text-decoration: none; font-size: 0.8125rem;
+      border-left: 3px solid transparent;
+    }
+    .toc a:hover, .toc a:focus { color: var(--text); background: rgba(255,255,255,0.04); }
+    .toc a.active { color: var(--accent2); border-left-color: var(--accent2); background: rgba(78,204,163,0.08); }
+    .toc .toc-sub a { padding-left: 2rem; font-size: 0.75rem; }
+    .content { flex: 1; max-width: 820px; padding: 2rem 2.5rem 4rem; }
+    .back-app {
+      display: inline-block; margin-bottom: 1.5rem;
+      color: var(--accent2); font-size: 0.875rem;
+    }
+    .back-app:hover { text-decoration: underline; }
+    section {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    section:last-child { border-bottom: none; }
+    section.hidden-by-search { display: none; }
+    h2 {
+      font-size: 1.5rem; margin-bottom: 0.75rem;
+      color: var(--text); scroll-margin-top: 1rem;
+    }
+    h3 { font-size: 1.1rem; margin: 1.25rem 0 0.5rem; color: var(--accent2); }
+    h4 { font-size: 0.95rem; margin: 1rem 0 0.4rem; }
+    p, ul, ol { margin-bottom: 0.75rem; }
+    ul, ol { padding-left: 1.5rem; }
+    li { margin-bottom: 0.35rem; }
+    .lead { font-size: 1.05rem; color: var(--muted); }
+    .tip, .example, .note {
+      padding: 1rem 1.15rem; border-radius: var(--radius);
+      margin: 1rem 0; font-size: 0.9rem;
+    }
+    .tip { background: rgba(78,204,163,0.1); border: 1px solid var(--accent2); }
+    .example { background: rgba(233,69,96,0.08); border: 1px dashed var(--accent); }
+    .note { background: var(--bg2); border: 1px solid var(--border); }
+    .example strong, .tip strong { display: block; margin-bottom: 0.35rem; }
+    kbd {
+      background: var(--bg3); padding: 0.1rem 0.4rem; border-radius: 4px;
+      font-size: 0.8rem; border: 1px solid var(--border);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: var(--bg2); color: var(--accent2); }
+    .faq-item { margin-bottom: 1rem; }
+    .faq-item summary {
+      cursor: pointer; font-weight: 600; padding: 0.6rem 0;
+      list-style: none;
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::before { content: '▸ '; color: var(--accent); }
+    .faq-item[open] summary::before { content: '▾ '; }
+    .faq-item p { padding-left: 1.25rem; color: var(--muted); font-size: 0.9rem; }
+    mark.search-hit { background: rgba(255,193,7,0.35); color: inherit; padding: 0 2px; }
+    .steps { counter-reset: step; list-style: none; padding-left: 0; }
+    .steps li {
+      counter-increment: step; position: relative;
+      padding-left: 2.5rem; margin-bottom: 1rem;
+    }
+    .steps li::before {
+      content: counter(step);
+      position: absolute; left: 0; top: 0;
+      width: 1.75rem; height: 1.75rem;
+      background: var(--accent); color: #fff;
+      border-radius: 50%; text-align: center;
+      line-height: 1.75rem; font-size: 0.85rem; font-weight: 600;
+    }
+    @media (max-width: 900px) {
+      .layout { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: relative; max-height: 50vh; }
+      .content { padding: 1.5rem 1rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Aller au contenu principal</a>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Sommaire de la documentation">
+      <div class="sidebar-brand">
+        <h1>App Stats</h1>
+        <p>Documentation utilisateur</p>
+      </div>
+      <div class="search-box">
+        <label for="doc-search">Rechercher par mot-clé</label>
+        <input type="search" id="doc-search" placeholder="Ex : filtre, xlsx, graphique…" autocomplete="off">
+        <p class="search-hint" id="search-status">Tapez pour filtrer les sections</p>
+      </div>
+      <ul class="toc" id="toc">
+        <li><a href="#intro">Introduction</a></li>
+        <li><a href="#debuter">Guide du débutant</a></li>
+        <li><a href="#import">Import de fichiers</a></li>
+        <li><a href="#colonnes">Colonnes et formatage</a></li>
+        <li><a href="#navigation">Navigation et onglets</a></li>
+        <li class="toc-sub"><a href="#en-tete">Barre d'en-tête</a></li>
+        <li class="toc-sub"><a href="#onglet-donnees">Données</a></li>
+        <li class="toc-sub"><a href="#onglet-info">Information</a></li>
+        <li><a href="#filtre-courant">Filtre courant</a></li>
+        <li class="toc-sub"><a href="#sidebar-piles">Sidebar des piles</a></li>
+        <li class="toc-sub"><a href="#surfiltre">Surfiltre</a></li>
+        <li><a href="#filtre-mensuel">Filtre mensuel</a></li>
+        <li class="toc-sub"><a href="#calculs">Calculs avancés</a></li>
+        <li class="toc-sub"><a href="#sidebar-calculs">Sidebar calculs</a></li>
+        <li><a href="#valeurs">Valeurs et export</a></li>
+        <li><a href="#graphiques">Graphiques</a></li>
+        <li class="toc-sub"><a href="#multi-graphiques">Plusieurs graphiques</a></li>
+        <li><a href="#presets">Presets et sauvegarde</a></li>
+        <li class="toc-sub"><a href="#preset-import-header">Preset import (en-tête)</a></li>
+        <li><a href="#pdf">Rapport PDF</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#glossaire">Glossaire</a></li>
+      </ul>
+    </nav>
+
+    <main class="content" id="main">
+      <a href="./" class="back-app">← Retour à l'application</a>
+
+      <section id="intro" data-keywords="introduction présentation app stats excel analyse">
+        <h2>Introduction</h2>
+        <p class="lead">
+          <strong>App Stats</strong> permet d'importer des fichiers Excel (.xlsx), de configurer vos colonnes,
+          de filtrer les données et de produire des statistiques mensuelles, graphiques et rapports PDF.
+        </p>
+        <p>Cette page s'ouvre dans un nouvel onglet pour que vous puissiez consulter l'aide tout en travaillant dans l'application.</p>
+        <p class="note">Documentation mise à jour le 25/06/2025 — couvre sidebar piles/calculs, surfiltre, multi-graphiques, presets JSON et export PDF complet.</p>
+        <div class="tip">
+          <strong>Pour qui ?</strong>
+          Les sections « Guide du débutant » et les exemples conviennent aux nouveaux utilisateurs.
+          Les sections détaillées sur les calculs, presets et graphiques s'adressent aux utilisateurs avancés.
+        </div>
+      </section>
+
+      <section id="debuter" data-keywords="débutant démarrage tutoriel exemple premier pas">
+        <h2>Guide du débutant</h2>
+        <p>Suivez ces étapes pour obtenir votre première statistique mensuelle en quelques minutes.</p>
+        <ol class="steps">
+          <li>
+            <strong>Importer un fichier</strong> — Cliquez sur <kbd>Importer un fichier .xlsx</kbd> en haut à droite.
+            Choisissez la ligne d'en-tête, sélectionnez les colonnes et validez.
+          </li>
+          <li>
+            <strong>Configurer les dates</strong> — Si une colonne contient des dates, ouvrez
+            <kbd>Configurer les colonnes</kbd> et définissez le formateur « Date » avec le bon format source.
+          </li>
+          <li>
+            <strong>Filtre mensuel</strong> — Onglet <kbd>Filtre mensuel</kbd> : choisissez la colonne date de référence,
+            créez une pile (+ Nouvelle pile) avec un filtre (ex. texte « contient »).
+          </li>
+          <li>
+            <strong>Voir les résultats</strong> — Onglet <kbd>Valeurs</kbd> : le tableau affiche le nombre de lignes
+            par pile et par mois (année courante par défaut). Cliquez une cellule pour voir le détail.
+          </li>
+          <li>
+            <strong>Graphique</strong> — Onglet <kbd>Graphiques</kbd> : sélectionnez les piles (case V/G cochée),
+            réglez la plage, puis <kbd>Actualiser le graphique</kbd>.
+          </li>
+          <li>
+            <strong>Exporter</strong> — <kbd>Exporter rapport PDF</kbd> inclut le tableau Valeurs et tous vos sous-onglets graphiques.
+          </li>
+        </ol>
+        <div class="example">
+          <strong>Exemple concret</strong>
+          Vous avez un fichier de tickets support avec une colonne « Statut » et une colonne « Date de clôture ».
+          <br>1. Formatez « Date de clôture » en date.
+          <br>2. Créez une pile « Tickets fermés » avec filtre texte : Statut contient « Fermé ».
+          <br>3. Dans Valeurs, vous verrez combien de tickets fermés existent par mois.
+        </div>
+      </section>
+
+      <section id="import" data-keywords="import xlsx excel fichier ajouter fusionner append merge">
+        <h2>Import de fichiers</h2>
+        <h3>Modes d'import</h3>
+        <table>
+          <thead><tr><th>Mode</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>Nouveau tableau</td><td>Crée un onglet de données indépendant.</td></tr>
+            <tr><td>Ajouter</td><td>Ajoute des lignes à un tableau existant.</td></tr>
+            <tr><td>Fusionner (ID)</td><td>Met à jour les lignes existantes selon une colonne identifiant.</td></tr>
+          </tbody>
+        </table>
+        <h3>Presets d'import</h3>
+        <p>Dans la fenêtre d'import, la section <strong>Presets d'import</strong> permet de mémoriser la ligne d'en-tête,
+        les colonnes cochées, les formateurs et les filtres du tableau actif. Enregistrez, rechargez ou exportez en JSON.</p>
+        <p>Les mêmes presets sont accessibles depuis l'en-tête (voir <a href="#preset-import-header">Preset import dans l'en-tête</a>).</p>
+      </section>
+
+      <section id="colonnes" data-keywords="colonne format date nombre majuscule formateur">
+        <h2>Colonnes et formatage</h2>
+        <p>Via <kbd>Configurer les colonnes</kbd>, vous pouvez renommer les colonnes et appliquer un formateur :</p>
+        <ul>
+          <li><strong>Date</strong> — conversion avec format source (ex. DD/MM/YYYY HH:mm) et affichage personnalisé.</li>
+          <li><strong>Nombre</strong> — normalisation pour filtres numériques et calculs.</li>
+          <li><strong>Majuscules</strong> — uniformisation du texte.</li>
+        </ul>
+        <div class="note">Un mauvais format de date empêche le regroupement mensuel : vérifiez l'onglet Information si les dates semblent incorrectes.</div>
+      </section>
+
+      <section id="navigation" data-keywords="navigation onglet vue barre footer switcher en-tête header">
+        <h2>Navigation et onglets</h2>
+        <p>La barre du bas permet de changer de vue. Plusieurs tableaux peuvent coexister via les onglets en haut.</p>
+        <table>
+          <thead><tr><th>Onglet</th><th>Rôle</th></tr></thead>
+          <tbody>
+            <tr><td>Données</td><td>Tableau brut importé</td></tr>
+            <tr><td>Information</td><td>Résumé et statistiques des colonnes</td></tr>
+            <tr><td>Filtre courant</td><td>Piles de filtres en temps réel (exploration)</td></tr>
+            <tr><td>Filtre mensuel</td><td>Piles, calculs et colonne date pour les stats mensuelles</td></tr>
+            <tr><td>Valeurs</td><td>Matrice piles/calculs × mois</td></tr>
+            <tr><td>Graphiques</td><td>Visualisation des séries (un ou plusieurs graphiques)</td></tr>
+          </tbody>
+        </table>
+        <h3 id="en-tete">Barre d'en-tête</h3>
+        <p>Actions globales disponibles en haut de l'application :</p>
+        <ul>
+          <li><kbd>Importer un fichier .xlsx</kbd> — ouvre l'assistant d'import.</li>
+          <li><kbd>Exporter preset import</kbd> / <kbd>Importer preset import</kbd> — sauvegarde ou restaure la configuration d'import (colonnes, formateurs, filtres) en fichier JSON.</li>
+          <li><kbd>Documentation</kbd> — ouvre cette page d'aide dans un nouvel onglet.</li>
+          <li><kbd>Configurer les colonnes</kbd> — formateurs et renommage.</li>
+          <li><kbd>Exporter rapport PDF</kbd> — tableau Valeurs + tous les graphiques configurés.</li>
+        </ul>
+        <h3 id="onglet-donnees">Données</h3>
+        <p>Affiche le tableau brut importé, avec défilement et recherche dans les lignes.</p>
+        <h3 id="onglet-info">Information</h3>
+        <p>Résumé du tableau : nombre de lignes/colonnes, types détectés, plages de dates et statistiques numériques.</p>
+      </section>
+
+      <section id="filtre-courant" data-keywords="filtre courant pile texte date nombre valeur connecteur et ou sans">
+        <h2>Filtre courant</h2>
+        <p>Les <strong>piles de filtres</strong> combinent plusieurs conditions pour isoler des lignes en temps réel.</p>
+        <h3>Types de filtres</h3>
+        <ul>
+          <li>Texte (contient, commence par, finit par)</li>
+          <li>Valeur exacte (liste multi-sélection)</li>
+          <li>Date (avant, après, période)</li>
+          <li>Nombre (comparaisons et plages)</li>
+          <li>Vide / Non vide</li>
+          <li><strong>Surfiltre</strong> — filtrer à partir des résultats d'une autre pile (voir ci-dessous)</li>
+        </ul>
+        <h3>Connecteurs</h3>
+        <p><strong>ET</strong>, <strong>OU</strong>, <strong>AVEC</strong>, <strong>SANS</strong> lient chaque filtre au précédent.</p>
+        <h3>Actions utiles</h3>
+        <ul>
+          <li><strong>Sidebar</strong> — liste des piles à gauche ; la pile sélectionnée s'édite à droite.</li>
+          <li><strong>V/G</strong> — case à cocher pour afficher ou masquer la pile dans Valeurs et Graphiques.</li>
+          <li><strong>↑ ↓</strong> — réordonner les piles.</li>
+          <li><strong>Importer preset filtre (JSON)</strong> — charge un fichier preset exporté.</li>
+          <li><strong>Presets filtres</strong> — historique local avec versions.</li>
+        </ul>
+        <h3 id="sidebar-piles">Sidebar des piles</h3>
+        <p>Cliquez une pile dans la liste pour l'éditer. Le panneau principal (à droite) affiche uniquement l'élément sélectionné ;
+        <strong>seule cette zone défile</strong> si le contenu est long — la sidebar reste fixe.</p>
+        <ul>
+          <li>Bouton <strong>⧉</strong> dans l'éditeur : dupliquer la pile active.</li>
+          <li>Les résultats filtrés s'affichent sous les filtres (filtre courant uniquement).</li>
+        </ul>
+        <h3 id="surfiltre">Surfiltre</h3>
+        <p>Type de filtre <strong>Surfiltre (pile source)</strong> : restreint les résultats aux lignes d'une autre pile, puis enchaînez d'autres filtres pour affiner par étapes.</p>
+        <div class="example">
+          <strong>Exemple surfiltre</strong>
+          Pile A « Tous les clos » → Pile B avec surfiltre sur A + filtre texte « urgent » = tickets clos ET urgents.
+        </div>
+      </section>
+
+      <section id="filtre-mensuel" data-keywords="filtre mensuel mois colonne date pile calcul sidebar compteur analyse">
+        <h2>Filtre mensuel</h2>
+        <p>Comme le filtre courant, mais les comptages sont répartis <strong>par mois</strong> selon la colonne date choisie en haut de la vue.</p>
+        <p>Les filtres date peuvent être relatifs au mois affiché (début, fin, pendant le mois).</p>
+        <h3 id="sidebar-calculs">Sidebar piles et calculs</h3>
+        <p>La sidebar liste <strong>toutes les piles</strong> et, en dessous, les <strong>calculs, compteurs et analyses dates</strong>.
+        Cliquez un élément pour l'éditer dans le panneau principal. Les boutons de création sont dans l'en-tête de la vue :</p>
+        <ul>
+          <li><kbd>+ Nouvelle pile</kbd> — pile de filtres mensuels</li>
+          <li><kbd>+ Calcul</kbd> — formule entre piles ou calculs</li>
+          <li><kbd>+ Compteur</kbd> — agrégation sur une pile filtrée</li>
+          <li><kbd>+ Analyse dates</kbd> — durées entre deux colonnes date</li>
+        </ul>
+        <p>Case <strong>V/G</strong> sur les piles : contrôle la visibilité dans Valeurs et Graphiques (les calculs y apparaissent toujours).
+        Utilisez <strong>↑ ↓</strong> pour réordonner piles et calculs librement dans la liste.</p>
+        <h3 id="calculs">Calculs avancés</h3>
+        <h4>Calcul formule (+ Calcul)</h4>
+        <p>Combine des piles ou d'autres calculs : addition, soustraction, multiplication, division, ratio, etc.</p>
+        <h4>Compteur (+ Compteur)</h4>
+        <p>Sur le résultat d'une pile filtrée, pour chaque mois :</p>
+        <ul>
+          <li>Somme d'une colonne numérique</li>
+          <li>Somme du nombre de caractères d'une colonne texte</li>
+          <li>Nombre d'occurrences d'un caractère choisi</li>
+        </ul>
+        <div class="example">
+          <strong>Exemple compteur</strong>
+          Pile « Commandes validées » + compteur en mode « Somme numérique » sur la colonne « Montant »
+          → total des montants par mois pour les commandes filtrées.
+        </div>
+        <h4>Analyse de dates (+ Analyse dates)</h4>
+        <p>Entre deux colonnes date, sur les lignes d'une pile :</p>
+        <ul>
+          <li>Moyenne, minimum ou maximum de durée en jours</li>
+          <li>Nombre de lignes dont la durée est dans une plage (ex. entre 3 et 10 jours)</li>
+        </ul>
+      </section>
+
+      <section id="valeurs" data-keywords="valeurs matrice mois export xlsx détail pdf">
+        <h2>Valeurs et export</h2>
+        <p>Matrice croisée : piles / calculs en lignes, mois en colonnes. Cliquez une cellule pour le détail des lignes.</p>
+        <ul>
+          <li><strong>Exporter XLSX</strong> — télécharge la matrice visible.</li>
+          <li>Dans le détail d'une cellule : <strong>Exporter XLSX</strong> pour les lignes filtrées.</li>
+          <li>Colonne <strong>PDF</strong> — inclure ou exclure une ligne du rapport PDF.</li>
+        </ul>
+        <p>Plage d'affichage : totalité, par année ou par mois. Par défaut, l'année <strong>courante</strong> est sélectionnée si elle existe dans les données.</p>
+      </section>
+
+      <section id="graphiques" data-keywords="graphique chart colonne ligne camembert plage custom actualiser barres empilé soustraction">
+        <h2>Graphiques</h2>
+        <p>Visualisez les séries visibles dans l'onglet Valeurs (piles avec V/G coché + calculs).</p>
+        <ul>
+          <li>Types : <strong>colonnes</strong>, <strong>lignes</strong>, <strong>camembert</strong> (min. 2 séries).</li>
+          <li>Plage : toutes les dates, année, mois ou <strong>plage personnalisée</strong> (date début / fin).</li>
+          <li>Couleurs et cases à cocher pour inclure ou exclure chaque série.</li>
+          <li>Cliquez <kbd>Actualiser le graphique</kbd> après chaque changement de paramètres.</li>
+        </ul>
+        <h3>Dispositions en colonnes</h3>
+        <table>
+          <thead><tr><th>Disposition</th><th>Comportement</th></tr></thead>
+          <tbody>
+            <tr><td>Parallèles</td><td>Barres côte à côte ; par série, choix <strong>Barres</strong> ou <strong>Ligne</strong> (courbe continue sur tous les mois).</td></tr>
+            <tr><td>Empilées (addition)</td><td>Les valeurs s'additionnent verticalement par mois.</td></tr>
+            <tr><td>Empilées (soustraction)</td><td>La 1<sup>re</sup> série s'additionne, les suivantes se soustraient visuellement.</td></tr>
+          </tbody>
+        </table>
+        <h3>Paramètres d'affichage</h3>
+        <ul>
+          <li><strong>Max ordonnée</strong> — fixe l'échelle verticale (vide = automatique).</li>
+          <li><strong>Position légende</strong> — droite, gauche, haut ou bas.</li>
+        </ul>
+        <h3>Édition des valeurs</h3>
+        <ul>
+          <li>Liste <strong>Valeurs du graphique</strong> — valeurs actives ; bouton × pour retirer.</li>
+          <li>Menu déroulant <strong>Ajouter une valeur</strong> — choix parmi les piles/calculs disponibles (V/G).</li>
+          <li>Panneau <strong>Couleurs et styles par valeur</strong> — couleur et type barres/ligne par série.</li>
+        </ul>
+        <h3 id="multi-graphiques">Plusieurs graphiques</h3>
+        <p>Bouton <strong>+ Ajouter un graphique</strong> : sous-onglets avec noms éditables (double-clic). Chaque graphique a sa propre plage, type, disposition et séries.</p>
+        <div class="tip">
+          <strong>Export PDF</strong>
+          Tous les sous-onglets graphiques sont inclus dans le rapport PDF, chacun sous son titre. Pensez à actualiser les graphiques avant l'export pour des captures à jour.
+        </div>
+      </section>
+
+      <section id="presets" data-keywords="preset sauvegarde json historique version import export filtres fichier">
+        <h2>Presets et sauvegarde</h2>
+        <h3>Presets filtres</h3>
+        <p>Bouton <kbd>Presets filtres</kbd> (Filtre courant ou mensuel) :</p>
+        <ul>
+          <li>Nommer et enregistrer la configuration actuelle (piles, calculs, colonne date mensuelle)</li>
+          <li>Historique local (30 entrées max) avec date et numéro de version</li>
+          <li>Charger une version antérieure ou mettre à jour un preset existant</li>
+          <li><strong>Exporter fichier JSON</strong> depuis la modal — télécharge la config complète</li>
+        </ul>
+        <p>Bouton <kbd>Importer preset filtre (JSON)</kbd> (même vue) : charge directement un fichier JSON exporté, sans passer par le presse-papiers.
+        Le preset inclut filtres, calculs, ordre sidebar, plage Valeurs et configuration des graphiques (sous-onglets, couleurs, séries).</p>
+        <div class="note">L'export/import JSON via presse-papiers n'est plus disponible dans les vues filtres : utilisez les fichiers JSON.</div>
+        <h3>Presets d'import</h3>
+        <p>Dans la fenêtre d'import ou via l'en-tête (voir ci-dessous).</p>
+        <h3 id="preset-import-header">Preset import dans l'en-tête</h3>
+        <p>À côté de « Importer un fichier .xlsx » :</p>
+        <ul>
+          <li><strong>Exporter preset import</strong> — télécharge un fichier JSON (colonnes, formateurs, filtres).</li>
+          <li><strong>Importer preset import</strong> — charge un JSON preset ; appliqué à la modal d'import ou aux filtres du tableau actif.</li>
+        </ul>
+      </section>
+
+      <section id="pdf" data-keywords="pdf rapport export imprimer graphique multiple">
+        <h2>Rapport PDF</h2>
+        <p><kbd>Exporter rapport PDF</kbd> (en-tête) génère une page d'impression contenant :</p>
+        <ol>
+          <li>Le <strong>tableau des valeurs</strong> selon la plage affichée dans l'onglet Valeurs (lignes cochées PDF uniquement).</li>
+          <li><strong>Tous les graphiques</strong> configurés — un bloc par sous-onglet, avec le titre du graphique.</li>
+        </ol>
+        <p>Les graphiques sont rendus automatiquement à l'export (pas besoin d'être sur l'onglet Graphiques). Les séries et plages de chaque sous-onglet sont respectées.</p>
+      </section>
+
+      <section id="faq" data-keywords="faq question problème aide erreur">
+        <h2>FAQ</h2>
+        <details class="faq-item">
+          <summary>Pourquoi l'onglet Valeurs est vide ?</summary>
+          <p>Vérifiez qu'une colonne date est sélectionnée dans Filtre mensuel et qu'au moins une pile existe.
+          Les dates doivent être correctement formatées à l'import.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Le graphique ne se met pas à jour tout seul</summary>
+          <p>C'est normal : cliquez « Actualiser le graphique » après avoir modifié les paramètres (performance).</p>
+        </details>
+        <details class="faq-item">
+          <summary>Comment partager ma configuration de filtres ?</summary>
+          <p>Dans Filtre courant ou mensuel : exportez un fichier JSON via <kbd>Presets filtres</kbd> → « Exporter fichier JSON »,
+          ou demandez au destinataire d'utiliser <kbd>Importer preset filtre (JSON)</kbd> pour charger votre fichier.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Une pile n'apparaît pas dans Valeurs ou Graphiques</summary>
+          <p>Vérifiez la case <strong>V/G</strong> dans la sidebar du filtre mensuel. Si elle est décochée, la pile est masquée de la matrice et des graphiques.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Le PDF ne contient qu'un seul graphique</summary>
+          <p>Seuls les sous-onglets créés via « + Ajouter un graphique » sont exportés. Un seul onglet = un seul graphique dans le PDF.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Que fait le bouton Dupliquer (⧉) sur une pile ?</summary>
+          <p>Crée une copie identique de la pile avec « copie » ajouté au nom, utile pour tester des variantes.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Différence entre filtre courant et filtre mensuel ?</summary>
+          <p>Le filtre courant explore les données en direct. Le filtre mensuel alimente les comptages par mois,
+          les calculs et les graphiques.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Où sont stockés les presets ?</summary>
+          <p>Dans le navigateur (localStorage). Pensez à exporter en JSON pour sauvegarder sur un autre poste.</p>
+        </details>
+      </section>
+
+      <section id="glossaire" data-keywords="glossaire définition pile calcul matrice surfiltre vg">
+        <h2>Glossaire</h2>
+        <table>
+          <thead><tr><th>Terme</th><th>Définition</th></tr></thead>
+          <tbody>
+            <tr><td>Pile</td><td>Ensemble de filtres combinés produisant un sous-ensemble de lignes.</td></tr>
+            <tr><td>Matrice</td><td>Tableau Valeurs : une valeur par pile/calcul et par mois.</td></tr>
+            <tr><td>Preset</td><td>Configuration sauvegardée (filtres ou import) rechargée via historique ou fichier JSON.</td></tr>
+            <tr><td>Compteur</td><td>Calcul agrégé (somme, caractères…) sur les lignes d'une pile, par mois.</td></tr>
+            <tr><td>Analyse dates</td><td>Calcul de durées en jours entre deux colonnes date, par mois.</td></tr>
+            <tr><td>Surfiltre</td><td>Filtre qui part des lignes déjà retenues par une autre pile, pour un filtrage en étapes.</td></tr>
+            <tr><td>V/G</td><td>Case « Valeurs / Graphiques » : affiche ou masque une pile dans la matrice et les graphiques.</td></tr>
+            <tr><td>Sous-onglet graphique</td><td>Graphique indépendant (plage, type, séries) dans l'onglet Graphiques.</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const searchInput = document.getElementById('doc-search');
+      const searchStatus = document.getElementById('search-status');
+      const sections = Array.from(document.querySelectorAll('main section'));
+      const tocLinks = Array.from(document.querySelectorAll('.toc a'));
+
+      function normalize(s) {
+        return s.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '');
+      }
+
+      function runSearch() {
+        const q = normalize(searchInput.value.trim());
+        let visible = 0;
+        sections.forEach(function (sec) {
+          const keywords = sec.getAttribute('data-keywords') || '';
+          const text = normalize(sec.textContent + ' ' + keywords);
+          const match = !q || text.includes(q);
+          sec.classList.toggle('hidden-by-search', !match);
+          if (match) visible++;
+        });
+        tocLinks.forEach(function (link) {
+          const id = link.getAttribute('href').slice(1);
+          const sec = document.getElementById(id);
+          const show = sec && !sec.classList.contains('hidden-by-search');
+          link.parentElement.style.display = show ? '' : 'none';
+        });
+        searchStatus.textContent = q
+          ? visible + ' section(s) correspondante(s)'
+          : 'Tapez pour filtrer les sections';
+      }
+
+      searchInput.addEventListener('input', runSearch);
+
+      const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            tocLinks.forEach(function (a) {
+              a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+            });
+          }
+        });
+      }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+      sections.forEach(function (sec) { observer.observe(sec); });
+    })();
+  </script>
+</body>
+</html>
