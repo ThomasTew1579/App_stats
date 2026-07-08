@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Documentation — App Stats</title>
-  <meta name="description" content="Guide complet App Stats : import Excel, filtres, statistiques mensuelles, graphiques, presets et export.">
+  <meta name="description" content="Guide complet App Stats : import Excel, formats date, filtres courant/mensuel, calculs, surfiltre, couleurs, graphiques multi-onglets, presets et export PDF/XLSX.">
   <style>
     :root {
       --bg: #1a1a2e;
@@ -156,19 +156,23 @@
         <li><a href="#debuter">Guide du débutant</a></li>
         <li><a href="#import">Import de fichiers</a></li>
         <li><a href="#colonnes">Colonnes et formatage</a></li>
+        <li class="toc-sub"><a href="#formats-date">Formats de date</a></li>
         <li><a href="#navigation">Navigation et onglets</a></li>
         <li class="toc-sub"><a href="#en-tete">Barre d'en-tête</a></li>
         <li class="toc-sub"><a href="#onglet-donnees">Données</a></li>
         <li class="toc-sub"><a href="#onglet-info">Information</a></li>
         <li><a href="#filtre-courant">Filtre courant</a></li>
-        <li class="toc-sub"><a href="#sidebar-piles">Sidebar des piles</a></li>
+        <li class="toc-sub"><a href="#sidebar-piles">Sidebar piles et calculs</a></li>
+        <li class="toc-sub"><a href="#filtre-courant-calculs">Calculs filtre courant</a></li>
         <li class="toc-sub"><a href="#surfiltre">Surfiltre</a></li>
+        <li><a href="#couleurs">Couleurs</a></li>
         <li><a href="#filtre-mensuel">Filtre mensuel</a></li>
         <li class="toc-sub"><a href="#calculs">Calculs avancés</a></li>
         <li class="toc-sub"><a href="#sidebar-calculs">Sidebar calculs</a></li>
         <li><a href="#valeurs">Valeurs et export</a></li>
         <li><a href="#graphiques">Graphiques</a></li>
         <li class="toc-sub"><a href="#multi-graphiques">Plusieurs graphiques</a></li>
+        <li class="toc-sub"><a href="#graphiques-courant">Piles filtre courant</a></li>
         <li><a href="#presets">Presets et sauvegarde</a></li>
         <li class="toc-sub"><a href="#preset-import-header">Preset import (en-tête)</a></li>
         <li><a href="#pdf">Rapport PDF</a></li>
@@ -187,7 +191,7 @@
           de filtrer les données et de produire des statistiques mensuelles, graphiques et rapports PDF.
         </p>
         <p>Cette page s'ouvre dans un nouvel onglet pour que vous puissiez consulter l'aide tout en travaillant dans l'application.</p>
-        <p class="note">Documentation mise à jour le 25/06/2025 — couvre sidebar piles/calculs, surfiltre, multi-graphiques, presets JSON et export PDF complet.</p>
+        <p class="note">Documentation mise à jour le 06/07/2025 — plage personnalisée Valeurs, graphiques avec interface deux colonnes, légende texte, calculs courants, tableau PDF par graphique, thème clair/sombre.</p>
         <div class="tip">
           <strong>Pour qui ?</strong>
           Les sections « Guide du débutant » et les exemples conviennent aux nouveaux utilisateurs.
@@ -205,7 +209,9 @@
           </li>
           <li>
             <strong>Configurer les dates</strong> — Si une colonne contient des dates, ouvrez
-            <kbd>Configurer les colonnes</kbd> et définissez le formateur « Date » avec le bon format source.
+            <kbd>Configurer les colonnes</kbd> et définissez le formateur « Date » avec le format source
+            (liste déroulante : DD/MM/YYYY, DD/MM/YY, avec ou sans heure). Les dates à un chiffre
+            (ex. 5/2/26) sont normalisées automatiquement.
           </li>
           <li>
             <strong>Filtre mensuel</strong> — Onglet <kbd>Filtre mensuel</kbd> : choisissez la colonne date de référence,
@@ -245,18 +251,32 @@
         </table>
         <h3>Presets d'import</h3>
         <p>Dans la fenêtre d'import, la section <strong>Presets d'import</strong> permet de mémoriser la ligne d'en-tête,
-        les colonnes cochées, les formateurs et les filtres du tableau actif. Enregistrez, rechargez ou exportez en JSON.</p>
+        les colonnes cochées, les formateurs (dont le format source date) et les filtres du tableau actif. Enregistrez, rechargez ou exportez en JSON.
+        La sélection d'un preset applique immédiatement colonnes et formateurs dans la fenêtre.</p>
         <p>Les mêmes presets sont accessibles depuis l'en-tête (voir <a href="#preset-import-header">Preset import dans l'en-tête</a>).</p>
       </section>
 
-      <section id="colonnes" data-keywords="colonne format date nombre majuscule formateur">
+      <section id="colonnes" data-keywords="colonne format date nombre majuscule formateur DD MM YY HH mm normalisation">
         <h2>Colonnes et formatage</h2>
         <p>Via <kbd>Configurer les colonnes</kbd>, vous pouvez renommer les colonnes et appliquer un formateur :</p>
         <ul>
-          <li><strong>Date</strong> — conversion avec format source (ex. DD/MM/YYYY HH:mm) et affichage personnalisé.</li>
+          <li><strong>Date</strong> — conversion avec format source et affichage personnalisé.</li>
           <li><strong>Nombre</strong> — normalisation pour filtres numériques et calculs.</li>
           <li><strong>Majuscules</strong> — uniformisation du texte.</li>
         </ul>
+        <h3 id="formats-date">Formats de date à l'import</h3>
+        <p>Lors de l'import ou dans <kbd>Configurer les colonnes</kbd>, le <strong>format source</strong> est choisi dans une liste :</p>
+        <table>
+          <thead><tr><th>Format source</th><th>Exemple</th></tr></thead>
+          <tbody>
+            <tr><td>DD/MM/YYYY</td><td>05/02/2026</td></tr>
+            <tr><td>DD/MM/YY</td><td>01/01/26 → interprété comme 01/01/2026</td></tr>
+            <tr><td>DD/MM/YYYY HH:mm</td><td>05/02/2026 14:30</td></tr>
+            <tr><td>DD/MM/YY HH:mm</td><td>5/2/26 9:05 → 05/02/2026 09:05</td></tr>
+          </tbody>
+        </table>
+        <p>Normalisation automatique : si le jour ou le mois n'a qu'un chiffre, un zéro est ajouté devant ;
+        si l'année n'a que deux chiffres, elle est complétée en 20xx.</p>
         <div class="note">Un mauvais format de date empêche le regroupement mensuel : vérifiez l'onglet Information si les dates semblent incorrectes.</div>
       </section>
 
@@ -268,7 +288,7 @@
           <tbody>
             <tr><td>Données</td><td>Tableau brut importé</td></tr>
             <tr><td>Information</td><td>Résumé et statistiques des colonnes</td></tr>
-            <tr><td>Filtre courant</td><td>Piles de filtres en temps réel (exploration)</td></tr>
+            <tr><td>Filtre courant</td><td>Piles, calculs, compteurs et analyses en temps réel ; résultats filtrés exportables</td></tr>
             <tr><td>Filtre mensuel</td><td>Piles, calculs et colonne date pour les stats mensuelles</td></tr>
             <tr><td>Valeurs</td><td>Matrice piles/calculs × mois</td></tr>
             <tr><td>Graphiques</td><td>Visualisation des séries (un ou plusieurs graphiques)</td></tr>
@@ -279,6 +299,7 @@
         <ul>
           <li><kbd>Importer un fichier .xlsx</kbd> — ouvre l'assistant d'import.</li>
           <li><kbd>Exporter preset import</kbd> / <kbd>Importer preset import</kbd> — sauvegarde ou restaure la configuration d'import (colonnes, formateurs, filtres) en fichier JSON.</li>
+          <li><kbd>☀ Clair</kbd> / <kbd>☾ Sombre</kbd> — bascule entre thème clair et thème sombre (mémorisé dans le navigateur).</li>
           <li><kbd>Documentation</kbd> — ouvre cette page d'aide dans un nouvel onglet.</li>
           <li><kbd>Configurer les colonnes</kbd> — formateurs et renommage.</li>
           <li><kbd>Exporter rapport PDF</kbd> — tableau Valeurs + tous les graphiques configurés.</li>
@@ -289,40 +310,58 @@
         <p>Résumé du tableau : nombre de lignes/colonnes, types détectés, plages de dates et statistiques numériques.</p>
       </section>
 
-      <section id="filtre-courant" data-keywords="filtre courant pile texte date nombre valeur connecteur et ou sans">
+      <section id="filtre-courant" data-keywords="filtre courant pile texte date nombre valeur connecteur et ou sans calcul compteur analyse export xlsx">
         <h2>Filtre courant</h2>
-        <p>Les <strong>piles de filtres</strong> combinent plusieurs conditions pour isoler des lignes en temps réel.</p>
+        <p>Les <strong>piles de filtres</strong> combinent plusieurs conditions pour isoler des lignes en temps réel.
+        Contrairement au filtre mensuel, les comptages ne sont pas répartis par mois : vous voyez le résultat global
+        et pouvez y ajouter des <strong>calculs, compteurs et analyses de dates</strong> comme dans le filtre mensuel.</p>
         <h3>Types de filtres</h3>
         <ul>
           <li>Texte (contient, commence par, finit par)</li>
           <li>Valeur exacte (liste multi-sélection)</li>
-          <li>Date (avant, après, période)</li>
+          <li>Date (avant, après, période — avec option <strong>Fin : date actuelle</strong> pour une plage)</li>
           <li>Nombre (comparaisons et plages)</li>
           <li>Vide / Non vide</li>
-          <li><strong>Surfiltre</strong> — filtrer à partir des résultats d'une autre pile (voir ci-dessous)</li>
+          <li><strong>Surfiltre</strong> — filtrer à partir des résultats d'une autre pile ou d'un calcul (voir ci-dessous)</li>
         </ul>
         <h3>Connecteurs</h3>
         <p><strong>ET</strong>, <strong>OU</strong>, <strong>AVEC</strong>, <strong>SANS</strong> lient chaque filtre au précédent.</p>
         <h3>Actions utiles</h3>
         <ul>
-          <li><strong>Sidebar</strong> — liste des piles à gauche ; la pile sélectionnée s'édite à droite.</li>
-          <li><strong>V/G</strong> — case à cocher pour afficher ou masquer la pile dans Valeurs et Graphiques.</li>
-          <li><strong>↑ ↓</strong> — réordonner les piles.</li>
+          <li><strong>Sidebar</strong> — liste des piles et calculs à gauche (sidebar élargie) ; l'élément sélectionné s'édite à droite.</li>
+          <li><strong>V/G</strong> — case à cocher sur les piles pour les afficher ou les masquer dans Valeurs et Graphiques.</li>
+          <li><strong>↑ ↓</strong> — réordonner piles et calculs dans la sidebar.</li>
+          <li><strong>⧉ / ×</strong> — dupliquer ou supprimer la pile ou le calcul sélectionné.</li>
           <li><strong>Importer preset filtre (JSON)</strong> — charge un fichier preset exporté.</li>
           <li><strong>Presets filtres</strong> — historique local avec versions.</li>
         </ul>
-        <h3 id="sidebar-piles">Sidebar des piles</h3>
-        <p>Cliquez une pile dans la liste pour l'éditer. Le panneau principal (à droite) affiche uniquement l'élément sélectionné ;
+        <h3 id="sidebar-piles">Sidebar piles et calculs</h3>
+        <p>La sidebar liste <strong>toutes les piles</strong> puis les <strong>calculs, compteurs et analyses</strong>.
+        Cliquez un élément pour l'éditer. Le panneau principal (à droite) affiche uniquement l'élément sélectionné ;
         <strong>seule cette zone défile</strong> si le contenu est long — la sidebar reste fixe.</p>
         <ul>
-          <li>Bouton <strong>⧉</strong> dans l'éditeur : dupliquer la pile active.</li>
-          <li>Les résultats filtrés s'affichent sous les filtres (filtre courant uniquement).</li>
+          <li>Chaque pile affiche son <strong>comptage de lignes</strong> (nombre de lignes correspondantes).</li>
+          <li>Boutons de création dans l'en-tête : <kbd>+ Nouvelle pile</kbd>, <kbd>+ Calcul</kbd>, <kbd>+ Compteur</kbd>, <kbd>+ Analyse dates</kbd>.</li>
+          <li>Bordure colorée à gauche de chaque entrée (voir <a href="#couleurs">Couleurs</a>).</li>
         </ul>
+        <h3 id="filtre-courant-calculs">Calculs, compteurs et analyses (filtre courant)</h3>
+        <p>Les mêmes types de calcul que dans le filtre mensuel, mais avec une <strong>valeur unique</strong> (pas par mois) :</p>
+        <ul>
+          <li><strong>Calcul</strong> — formule entre piles ou autres calculs (addition, soustraction, ratio…).</li>
+          <li><strong>Compteur</strong> — somme numérique, somme de caractères ou occurrences sur les lignes d'une pile (ou d'un calcul source).</li>
+          <li><strong>Analyse dates</strong> — moyenne, min, max ou plage de durées en jours entre deux colonnes date ; la colonne de fin peut être <strong>Date actuelle</strong>.</li>
+        </ul>
+        <p>Comme en filtre mensuel, un compteur ou une analyse peut prendre comme source une <strong>pile</strong> ou un <strong>calcul précédent</strong> dans la sidebar.</p>
+        <h3>Résultat après filtrage et export XLSX</h3>
+        <p>Sous les filtres d'une pile, la section <strong>Résultat après filtrage</strong> affiche un aperçu des lignes retenues.
+        Le bouton <kbd>Exporter XLSX</kbd> télécharge toutes les lignes filtrées (colonnes du tableau) — pratique pour partager ou analyser hors de l'application.</p>
         <h3 id="surfiltre">Surfiltre</h3>
-        <p>Type de filtre <strong>Surfiltre (pile source)</strong> : restreint les résultats aux lignes d'une autre pile, puis enchaînez d'autres filtres pour affiner par étapes.</p>
+        <p>Type de filtre <strong>Surfiltre (pile ou calcul source)</strong> : restreint les résultats aux lignes déjà retenues
+        par une autre pile <em>ou</em> par un calcul/compteur/analyse existant, puis enchaînez d'autres filtres pour affiner par étapes.</p>
         <div class="example">
           <strong>Exemple surfiltre</strong>
-          Pile A « Tous les clos » → Pile B avec surfiltre sur A + filtre texte « urgent » = tickets clos ET urgents.
+          Pile A « Tous les clos » → Calcul B « Montant total » → Pile C avec surfiltre sur B + filtre texte « urgent »
+          = tickets urgents parmi ceux comptés dans B.
         </div>
       </section>
 
@@ -340,12 +379,13 @@
           <li><kbd>+ Analyse dates</kbd> — durées entre deux colonnes date</li>
         </ul>
         <p>Case <strong>V/G</strong> sur les piles : contrôle la visibilité dans Valeurs et Graphiques (les calculs y apparaissent toujours).
-        Utilisez <strong>↑ ↓</strong> pour réordonner piles et calculs librement dans la liste.</p>
+        Utilisez <strong>↑ ↓</strong> pour réordonner piles et calculs librement dans la liste.
+        Boutons <strong>⧉</strong> (dupliquer) et <strong>×</strong> (supprimer) sur chaque entrée.</p>
         <h3 id="calculs">Calculs avancés</h3>
         <h4>Calcul formule (+ Calcul)</h4>
         <p>Combine des piles ou d'autres calculs : addition, soustraction, multiplication, division, ratio, etc.</p>
         <h4>Compteur (+ Compteur)</h4>
-        <p>Sur le résultat d'une pile filtrée, pour chaque mois :</p>
+        <p>Sur le résultat d'une pile filtrée <em>ou d'un calcul précédent</em>, pour chaque mois :</p>
         <ul>
           <li>Somme d'une colonne numérique</li>
           <li>Somme du nombre de caractères d'une colonne texte</li>
@@ -357,32 +397,65 @@
           → total des montants par mois pour les commandes filtrées.
         </div>
         <h4>Analyse de dates (+ Analyse dates)</h4>
-        <p>Entre deux colonnes date, sur les lignes d'une pile :</p>
+        <p>Entre deux colonnes date (ou <strong>Date actuelle</strong> comme fin), sur les lignes d'une pile ou d'un calcul source :</p>
         <ul>
           <li>Moyenne, minimum ou maximum de durée en jours</li>
           <li>Nombre de lignes dont la durée est dans une plage (ex. entre 3 et 10 jours)</li>
         </ul>
+        <p>Dans un filtre date « dans la période », le bouton <kbd>Fin : date actuelle</kbd> fixe la borne haute à aujourd'hui.</p>
       </section>
 
-      <section id="valeurs" data-keywords="valeurs matrice mois export xlsx détail pdf">
+      <section id="couleurs" data-keywords="couleur pastille bordure sidebar graphique valeur sync">
+        <h2>Couleurs par pile et calcul</h2>
+        <p>Chaque pile, calcul, compteur ou analyse peut avoir une <strong>couleur</strong> définie dans son éditeur :</p>
+        <ul>
+          <li><strong>Sidebar</strong> — bordure gauche colorée sur l'entrée correspondante.</li>
+          <li><strong>Onglet Valeurs</strong> — pastille colorée à côté du nom de la série.</li>
+          <li><strong>Graphiques</strong> — couleur de la série synchronisée (modifiable aussi dans le panneau couleurs du graphique).</li>
+        </ul>
+        <p>Si aucune couleur n'est choisie, une couleur par défaut est attribuée automatiquement.</p>
+      </section>
+
+      <section id="valeurs" data-keywords="valeurs matrice mois export xlsx détail pdf pastille couleur">
         <h2>Valeurs et export</h2>
-        <p>Matrice croisée : piles / calculs en lignes, mois en colonnes. Cliquez une cellule pour le détail des lignes.</p>
+        <p>Matrice croisée : piles / calculs en lignes, mois en colonnes. Une <strong>pastille colorée</strong> identifie chaque série (couleur définie dans le filtre, voir <a href="#couleurs">Couleurs</a>).
+        Cliquez une cellule pour le détail des lignes.</p>
         <ul>
           <li><strong>Exporter XLSX</strong> — télécharge la matrice visible.</li>
           <li>Dans le détail d'une cellule : <strong>Exporter XLSX</strong> pour les lignes filtrées.</li>
           <li>Colonne <strong>PDF</strong> — inclure ou exclure une ligne du rapport PDF.</li>
         </ul>
-        <p>Plage d'affichage : totalité, par année ou par mois. Par défaut, l'année <strong>courante</strong> est sélectionnée si elle existe dans les données.</p>
+        <p>Plage d'affichage : totalité, par année, par mois ou <strong>plage personnalisée</strong> (date début / fin via le sélecteur de date).
+        Par défaut, l'année <strong>courante</strong> est sélectionnée si elle existe dans les données.</p>
       </section>
 
-      <section id="graphiques" data-keywords="graphique chart colonne ligne camembert plage custom actualiser barres empilé soustraction">
+      <section id="graphiques" data-keywords="graphique chart colonne ligne camembert plage custom actualiser barres empilé soustraction filtre courant légende">
         <h2>Graphiques</h2>
-        <p>Visualisez les séries visibles dans l'onglet Valeurs (piles avec V/G coché + calculs).</p>
+        <p>Visualisez les séries visibles dans l'onglet Valeurs (piles avec V/G coché + calculs mensuels).</p>
         <ul>
           <li>Types : <strong>colonnes</strong>, <strong>lignes</strong>, <strong>camembert</strong> (min. 2 séries).</li>
           <li>Plage : toutes les dates, année, mois ou <strong>plage personnalisée</strong> (date début / fin).</li>
           <li>Couleurs et cases à cocher pour inclure ou exclure chaque série.</li>
           <li>Cliquez <kbd>Actualiser le graphique</kbd> après chaque changement de paramètres.</li>
+        </ul>
+        <h3 id="graphiques-courant">Piles et calculs filtre courant (colonnes et camembert)</h3>
+        <p>Pour les graphiques en <strong>colonnes</strong> ou <strong>camembert</strong> :</p>
+        <ul>
+          <li><strong>Inclure les piles filtre courant</strong> — séries suffixées « (courant) »</li>
+          <li><strong>Inclure calculs filtre courant</strong> — compteurs, calculs et analyses du filtre courant, ventilés par mois</li>
+        </ul>
+        <p>Un <strong>avertissement</strong> s'affiche sous le sélecteur de plage si celle-ci ne convient pas aux valeurs courantes
+        (aucun mois, colonne date manquante, incohérence avec filtres date du filtre courant).</p>
+        <h3>Texte de légende et valeurs du graphique</h3>
+        <p>Chaque graphique accepte un <strong>texte de légende</strong> (sous-titre affiché sur le canvas et dans le PDF).</p>
+        <p>L'interface <strong>deux colonnes</strong> permet de gérer les valeurs :</p>
+        <ul>
+          <li>Colonne gauche — valeurs disponibles ; colonne droite — valeurs actives avec couleur et style</li>
+          <li>Boutons <strong>→</strong> / <strong>←</strong> pour ajouter ou retirer ; <strong>Tout retirer</strong> pour vider le graphique</li>
+          <li>Par valeur (colonnes) : ligne ou barres ; barres parallèles, empilées (addition) ou empilées (soustraction)</li>
+          <li>Empilement : bouton <strong>Colonnes…</strong> pour choisir les séries du groupe ; soustraction avec style flèche, demi-colonne ou hachures</li>
+          <li>Case <strong>PDF</strong> par valeur — inclure la ligne dans le mini-tableau au-dessus du graphique dans le rapport PDF
+          (indépendamment de la case PDF du tableau Valeurs principal)</li>
         </ul>
         <h3>Dispositions en colonnes</h3>
         <table>
@@ -396,7 +469,7 @@
         <h3>Paramètres d'affichage</h3>
         <ul>
           <li><strong>Max ordonnée</strong> — fixe l'échelle verticale (vide = automatique).</li>
-          <li><strong>Position légende</strong> — droite, gauche, haut ou bas.</li>
+          <li><strong>Position légende</strong> — droite, gauche, haut (par défaut) ou bas ; les libellés sont affichés en entier (sans troncature).</li>
         </ul>
         <h3>Édition des valeurs</h3>
         <ul>
@@ -417,16 +490,18 @@
         <h3>Presets filtres</h3>
         <p>Bouton <kbd>Presets filtres</kbd> (Filtre courant ou mensuel) :</p>
         <ul>
-          <li>Nommer et enregistrer la configuration actuelle (piles, calculs, colonne date mensuelle)</li>
+          <li>Nommer et enregistrer la configuration actuelle (piles courant et mensuel, calculs mensuels, colonne date, tous les graphiques)</li>
           <li>Historique local (30 entrées max) avec date et numéro de version</li>
           <li>Charger une version antérieure ou mettre à jour un preset existant</li>
           <li><strong>Exporter fichier JSON</strong> depuis la modal — télécharge la config complète</li>
         </ul>
         <p>Bouton <kbd>Importer preset filtre (JSON)</kbd> (même vue) : charge directement un fichier JSON exporté, sans passer par le presse-papiers.
-        Le preset inclut filtres, calculs, ordre sidebar, plage Valeurs et configuration des graphiques (sous-onglets, couleurs, séries).</p>
+        Le preset inclut piles filtre courant, piles/calculs mensuels, ordre sidebar mensuel, plage Valeurs et <strong>tous les sous-onglets graphiques</strong> (plages, couleurs, séries, dispositions).
+        Les calculs/compteurs du <strong>filtre courant</strong> ne sont pas encore inclus dans l'export preset (à recréer après import si besoin).</p>
         <div class="note">L'export/import JSON via presse-papiers n'est plus disponible dans les vues filtres : utilisez les fichiers JSON.</div>
         <h3>Presets d'import</h3>
-        <p>Dans la fenêtre d'import ou via l'en-tête (voir ci-dessous).</p>
+        <p>Dans la fenêtre d'import ou via l'en-tête (voir ci-dessous). La sélection d'un preset dans la liste applique immédiatement
+        la ligne d'en-tête, les colonnes cochées et les formateurs ; les filtres et graphiques du preset sont appliqués à la validation de l'import.</p>
         <h3 id="preset-import-header">Preset import dans l'en-tête</h3>
         <p>À côté de « Importer un fichier .xlsx » :</p>
         <ul>
@@ -440,7 +515,7 @@
         <p><kbd>Exporter rapport PDF</kbd> (en-tête) génère une page d'impression contenant :</p>
         <ol>
           <li>Le <strong>tableau des valeurs</strong> selon la plage affichée dans l'onglet Valeurs (lignes cochées PDF uniquement).</li>
-          <li><strong>Tous les graphiques</strong> configurés — un bloc par sous-onglet, avec le titre du graphique.</li>
+          <li><strong>Tous les graphiques</strong> configurés — pour chacun : titre, texte de légende, <strong>tableau des valeurs sélectionnées pour ce graphique</strong> (cases PDF dans l'éditeur graphique), puis l'image du graphique.</li>
         </ol>
         <p>Les graphiques sont rendus automatiquement à l'export (pas besoin d'être sur l'onglet Graphiques). Les séries et plages de chaque sous-onglet sont respectées.</p>
       </section>
@@ -475,8 +550,26 @@
         </details>
         <details class="faq-item">
           <summary>Différence entre filtre courant et filtre mensuel ?</summary>
-          <p>Le filtre courant explore les données en direct. Le filtre mensuel alimente les comptages par mois,
-          les calculs et les graphiques.</p>
+          <p>Le filtre courant explore les données en direct, avec calculs/compteurs/analyses à valeur unique et export XLSX des lignes filtrées.
+          Le filtre mensuel alimente les comptages par mois, la matrice Valeurs et les graphiques mensuels.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Comment exporter les lignes après un filtre courant ?</summary>
+          <p>Sélectionnez une pile dans Filtre courant : sous les filtres, section « Résultat après filtrage », cliquez <kbd>Exporter XLSX</kbd>.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Les piles filtre courant n'apparaissent pas dans mon graphique en lignes</summary>
+          <p>C'est normal : seuls les graphiques <strong>colonnes</strong> et <strong>camembert</strong> peuvent inclure les piles courantes.
+          Vérifiez aussi que « Inclure les piles filtre courant » est coché.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Mon preset d'import ne s'applique pas à la sélection</summary>
+          <p>Choisissez le preset dans la liste de la fenêtre d'import : colonnes et formateurs se mettent à jour tout de suite.
+          Les filtres et graphiques du preset sont appliqués après validation de l'import (nouveau tableau ou fusion).</p>
+        </details>
+        <details class="faq-item">
+          <summary>L'export preset filtres ne contient qu'un graphique</summary>
+          <p>L'export JSON inclut désormais <strong>tous</strong> les sous-onglets graphiques. Réexportez depuis une version à jour de l'application si votre ancien fichier n'en avait qu'un.</p>
         </details>
         <details class="faq-item">
           <summary>Où sont stockés les presets ?</summary>
@@ -484,17 +577,20 @@
         </details>
       </section>
 
-      <section id="glossaire" data-keywords="glossaire définition pile calcul matrice surfiltre vg">
+      <section id="glossaire" data-keywords="glossaire définition pile calcul matrice surfiltre vg courant date actuelle">
         <h2>Glossaire</h2>
         <table>
           <thead><tr><th>Terme</th><th>Définition</th></tr></thead>
           <tbody>
             <tr><td>Pile</td><td>Ensemble de filtres combinés produisant un sous-ensemble de lignes.</td></tr>
+            <tr><td>Filtre courant</td><td>Piles et calculs évalués sur l'ensemble des données, sans ventilation mensuelle.</td></tr>
             <tr><td>Matrice</td><td>Tableau Valeurs : une valeur par pile/calcul et par mois.</td></tr>
             <tr><td>Preset</td><td>Configuration sauvegardée (filtres ou import) rechargée via historique ou fichier JSON.</td></tr>
-            <tr><td>Compteur</td><td>Calcul agrégé (somme, caractères…) sur les lignes d'une pile, par mois.</td></tr>
-            <tr><td>Analyse dates</td><td>Calcul de durées en jours entre deux colonnes date, par mois.</td></tr>
-            <tr><td>Surfiltre</td><td>Filtre qui part des lignes déjà retenues par une autre pile, pour un filtrage en étapes.</td></tr>
+            <tr><td>Compteur</td><td>Calcul agrégé (somme, caractères…) sur les lignes d'une pile ou d'un calcul source.</td></tr>
+            <tr><td>Analyse dates</td><td>Calcul de durées en jours entre deux colonnes date (fin éventuellement « Date actuelle »).</td></tr>
+            <tr><td>Surfiltre</td><td>Filtre qui part des lignes d'une pile ou d'un calcul source, pour un filtrage en étapes.</td></tr>
+            <tr><td>Date actuelle</td><td>Borne de date dynamique (aujourd'hui) pour une analyse ou un filtre « dans la période ».</td></tr>
+            <tr><td>Pile (courant)</td><td>Dans les graphiques colonnes/camembert : série mensuelle dérivée des piles du filtre courant.</td></tr>
             <tr><td>V/G</td><td>Case « Valeurs / Graphiques » : affiche ou masque une pile dans la matrice et les graphiques.</td></tr>
             <tr><td>Sous-onglet graphique</td><td>Graphique indépendant (plage, type, séries) dans l'onglet Graphiques.</td></tr>
           </tbody>
