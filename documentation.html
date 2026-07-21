@@ -174,7 +174,9 @@
         <li class="toc-sub"><a href="#multi-graphiques">Plusieurs graphiques</a></li>
         <li class="toc-sub"><a href="#graphiques-courant">Piles filtre courant</a></li>
         <li><a href="#presets">Presets et sauvegarde</a></li>
+        <li class="toc-sub"><a href="#preset-global">Preset global</a></li>
         <li class="toc-sub"><a href="#preset-import-header">Preset import (en-tête)</a></li>
+        <li><a href="#rapport-rapide">Rapport rapide</a></li>
         <li><a href="#pdf">Rapport PDF</a></li>
         <li><a href="#faq">FAQ</a></li>
         <li><a href="#glossaire">Glossaire</a></li>
@@ -191,7 +193,7 @@
           de filtrer les données et de produire des statistiques mensuelles, graphiques et rapports PDF.
         </p>
         <p>Cette page s'ouvre dans un nouvel onglet pour que vous puissiez consulter l'aide tout en travaillant dans l'application.</p>
-        <p class="note">Documentation mise à jour le 06/07/2025 — plage personnalisée Valeurs, graphiques avec interface deux colonnes, légende texte, calculs courants, tableau PDF par graphique, thème clair/sombre.</p>
+        <p class="note">Documentation mise à jour le 25/06/2025 — rapport rapide (menu burger), presets globaux, sélection PDF par ligne, import différé avec ligne de titre du preset, menu header compact, thème clair/sombre.</p>
         <div class="tip">
           <strong>Pour qui ?</strong>
           Les sections « Guide du débutant » et les exemples conviennent aux nouveaux utilisateurs.
@@ -204,7 +206,7 @@
         <p>Suivez ces étapes pour obtenir votre première statistique mensuelle en quelques minutes.</p>
         <ol class="steps">
           <li>
-            <strong>Importer un fichier</strong> — Cliquez sur <kbd>Importer un fichier .xlsx</kbd> en haut à droite.
+            <strong>Importer un fichier</strong> — Menu ☰ → <kbd>Importer un fichier .xlsx</kbd>.
             Choisissez la ligne d'en-tête, sélectionnez les colonnes et validez.
           </li>
           <li>
@@ -226,7 +228,8 @@
             réglez la plage, puis <kbd>Actualiser le graphique</kbd>.
           </li>
           <li>
-            <strong>Exporter</strong> — <kbd>Exporter rapport PDF</kbd> inclut le tableau Valeurs et tous vos sous-onglets graphiques.
+            <strong>Exporter</strong> — <kbd>Exporter rapport PDF</kbd> (en-tête) inclut le tableau Valeurs et tous vos sous-onglets graphiques.
+            Pour un flux guidé : menu ☰ → <kbd>Rapport rapide</kbd>.
           </li>
         </ol>
         <div class="example">
@@ -253,7 +256,8 @@
         <p>Dans la fenêtre d'import, la section <strong>Presets d'import</strong> permet de mémoriser la ligne d'en-tête,
         les colonnes cochées, les formateurs (dont le format source date) et les filtres du tableau actif. Enregistrez, rechargez ou exportez en JSON.
         La sélection d'un preset applique immédiatement colonnes et formateurs dans la fenêtre.</p>
-        <p>Les mêmes presets sont accessibles depuis l'en-tête (voir <a href="#preset-import-header">Preset import dans l'en-tête</a>).</p>
+        <p>Option <strong>Date additive</strong> : ajoute une colonne date fixe (plus ancienne date du fichier) utile quand le fichier n'a pas de colonne date exploitable.</p>
+        <p>Les presets sont aussi accessibles via le menu ☰ → <kbd>Presets</kbd>.</p>
       </section>
 
       <section id="colonnes" data-keywords="colonne format date nombre majuscule formateur DD MM YY HH mm normalisation">
@@ -295,15 +299,19 @@
           </tbody>
         </table>
         <h3 id="en-tete">Barre d'en-tête</h3>
-        <p>Actions globales disponibles en haut de l'application :</p>
+        <p>La barre d'en-tête est compacte. Les actions principales sont regroupées dans le <strong>menu burger</strong> (☰) à gauche du titre :</p>
         <ul>
           <li><kbd>Importer un fichier .xlsx</kbd> — ouvre l'assistant d'import.</li>
-          <li><kbd>Exporter preset import</kbd> / <kbd>Importer preset import</kbd> — sauvegarde ou restaure la configuration d'import (colonnes, formateurs, filtres) en fichier JSON.</li>
-          <li><kbd>☀ Clair</kbd> / <kbd>☾ Sombre</kbd> — bascule entre thème clair et thème sombre (mémorisé dans le navigateur).</li>
+          <li><kbd>Presets</kbd> — ouvre la fenêtre d'import/export de presets (global ou par section).</li>
+          <li><kbd>Rapport rapide</kbd> — assistant guidé : fichier XLSX + preset global + période PDF (voir <a href="#rapport-rapide">Rapport rapide</a>).</li>
           <li><kbd>Documentation</kbd> — ouvre cette page d'aide dans un nouvel onglet.</li>
-          <li><kbd>Configurer les colonnes</kbd> — formateurs et renommage.</li>
-          <li><kbd>Exporter rapport PDF</kbd> — tableau Valeurs + tous les graphiques configurés.</li>
+          <li><kbd>Thème clair</kbd> / <kbd>Thème sombre</kbd> — bascule entre thèmes (mémorisé dans le navigateur).</li>
         </ul>
+        <p>À droite de l'en-tête :</p>
+        <ul>
+          <li><kbd>Exporter rapport PDF</kbd> — tableau Valeurs + tous les graphiques configurés (plage de l'onglet Valeurs).</li>
+        </ul>
+        <p>Les onglets de tableaux (noms des jeux de données importés) se trouvent sous le titre, à côté du menu.</p>
         <h3 id="onglet-donnees">Données</h3>
         <p>Affiche le tableau brut importé, avec défilement et recherche dans les lignes.</p>
         <h3 id="onglet-info">Information</h3>
@@ -423,7 +431,7 @@
         <ul>
           <li><strong>Exporter XLSX</strong> — télécharge la matrice visible.</li>
           <li>Dans le détail d'une cellule : <strong>Exporter XLSX</strong> pour les lignes filtrées.</li>
-          <li>Colonne <strong>PDF</strong> — inclure ou exclure une ligne du rapport PDF.</li>
+          <li>Colonne <strong>PDF</strong> — inclure ou exclure une ligne du rapport PDF (mémorisée dans les presets globaux, section valeurs).</li>
         </ul>
         <p>Plage d'affichage : totalité, par année, par mois ou <strong>plage personnalisée</strong> (date début / fin via le sélecteur de date).
         Par défaut, l'année <strong>courante</strong> est sélectionnée si elle existe dans les données.</p>
@@ -485,8 +493,21 @@
         </div>
       </section>
 
-      <section id="presets" data-keywords="preset sauvegarde json historique version import export filtres fichier">
+      <section id="presets" data-keywords="preset sauvegarde json historique version import export filtres fichier global section">
         <h2>Presets et sauvegarde</h2>
+        <h3 id="preset-global">Preset global</h3>
+        <p>Menu ☰ → <kbd>Presets</kbd> → onglet Export : <strong>Preset global</strong> regroupe en un seul fichier JSON :</p>
+        <table>
+          <thead><tr><th>Section</th><th>Contenu</th></tr></thead>
+          <tbody>
+            <tr><td>import</td><td>Ligne de titre, colonnes, formateurs, date additive</td></tr>
+            <tr><td>currentFilter</td><td>Piles, calculs et ordre du filtre courant</td></tr>
+            <tr><td>monthlyFilter</td><td>Piles mensuelles, calculs, colonne date, ordre sidebar</td></tr>
+            <tr><td>values</td><td>Plage de dates Valeurs + lignes PDF décochées (exclusions par nom)</td></tr>
+            <tr><td>charts</td><td>Tous les sous-onglets graphiques (plages, séries, styles, légendes)</td></tr>
+          </tbody>
+        </table>
+        <p>À l'import, choisissez les sections à appliquer (remplacer ou fusionner). Le <strong>rapport rapide</strong> utilise un preset global en ignorant les sections import et values (import et période gérés par le wizard).</p>
         <h3>Presets filtres</h3>
         <p>Bouton <kbd>Presets filtres</kbd> (Filtre courant ou mensuel) :</p>
         <ul>
@@ -502,12 +523,29 @@
         <h3>Presets d'import</h3>
         <p>Dans la fenêtre d'import ou via l'en-tête (voir ci-dessous). La sélection d'un preset dans la liste applique immédiatement
         la ligne d'en-tête, les colonnes cochées et les formateurs ; les filtres et graphiques du preset sont appliqués à la validation de l'import.</p>
-        <h3 id="preset-import-header">Preset import dans l'en-tête</h3>
-        <p>À côté de « Importer un fichier .xlsx » :</p>
+        <h3 id="preset-import-header">Presets dans le menu</h3>
+        <p>Menu ☰ → <kbd>Presets</kbd> :</p>
         <ul>
-          <li><strong>Exporter preset import</strong> — télécharge un fichier JSON (colonnes, formateurs, filtres).</li>
-          <li><strong>Importer preset import</strong> — charge un JSON preset ; appliqué à la modal d'import ou aux filtres du tableau actif.</li>
+          <li><strong>Import</strong> — charger un preset global ou par section (JSON).</li>
+          <li><strong>Export</strong> — exporter preset global ou une section (import, filtres, valeurs, graphiques).</li>
         </ul>
+      </section>
+
+      <section id="rapport-rapide" data-keywords="rapport rapide wizard assistant preset global xlsx période pdf guidé">
+        <h2>Rapport rapide</h2>
+        <p>Assistant en 4 étapes (menu ☰ → <kbd>Rapport rapide</kbd>) pour produire un PDF sans configurer manuellement l'application :</p>
+        <ol class="steps">
+          <li><strong>Fichier XLSX</strong> — sélectionnez le fichier source (aucun import à cette étape).</li>
+          <li><strong>Preset global</strong> — chargez un JSON preset global ; l'import utilise alors la <strong>ligne de titre</strong>, les colonnes et formateurs de la section import du preset, puis applique filtres et graphiques.</li>
+          <li><strong>Période et génération</strong> — choisissez la plage de dates pour le PDF (isolée de l'onglet Valeurs), vérifiez le récapitulatif des graphiques, nommez le document et générez.</li>
+          <li><strong>Impression</strong> — le navigateur ouvre la page d'impression (Ctrl+P).</li>
+        </ol>
+        <div class="tip">
+          <strong>Prérequis</strong>
+          Le preset global doit contenir au minimum les sections <em>import</em> et <em>monthlyFilter</em> (ou équivalent).
+          Les lignes Valeurs décochées (colonne PDF) sont reprises depuis la section <em>values</em> du preset.
+        </div>
+        <div class="note">Le rapport rapide ne modifie pas la plage de dates affichée dans l'onglet Valeurs de l'application : seul le PDF utilise la période choisie dans le wizard.</div>
       </section>
 
       <section id="pdf" data-keywords="pdf rapport export imprimer graphique multiple">
@@ -522,6 +560,15 @@
 
       <section id="faq" data-keywords="faq question problème aide erreur">
         <h2>FAQ</h2>
+        <details class="faq-item">
+          <summary>Comment utiliser le rapport rapide ?</summary>
+          <p>Menu ☰ → Rapport rapide. Sélectionnez le XLSX, puis un preset global exporté depuis votre configuration type.
+          La période PDF se choisit à l'étape 3, après l'import automatique.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Le rapport rapide s'ouvre-t-il au démarrage ?</summary>
+          <p>Non : ouvrez-le via le menu burger lorsque vous en avez besoin.</p>
+        </details>
         <details class="faq-item">
           <summary>Pourquoi l'onglet Valeurs est vide ?</summary>
           <p>Vérifiez qu'une colonne date est sélectionnée dans Filtre mensuel et qu'au moins une pile existe.
@@ -593,6 +640,8 @@
             <tr><td>Pile (courant)</td><td>Dans les graphiques colonnes/camembert : série mensuelle dérivée des piles du filtre courant.</td></tr>
             <tr><td>V/G</td><td>Case « Valeurs / Graphiques » : affiche ou masque une pile dans la matrice et les graphiques.</td></tr>
             <tr><td>Sous-onglet graphique</td><td>Graphique indépendant (plage, type, séries) dans l'onglet Graphiques.</td></tr>
+            <tr><td>Rapport rapide</td><td>Assistant guidé XLSX + preset global → PDF imprimable.</td></tr>
+            <tr><td>Preset global</td><td>Fichier JSON regroupant import, filtres, valeurs, graphiques.</td></tr>
           </tbody>
         </table>
       </section>
