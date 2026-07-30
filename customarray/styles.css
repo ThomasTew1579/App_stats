@@ -661,6 +661,19 @@ td.empty {
   color: var(--text);
 }
 
+.recurrence-report-name-input {
+  flex: 1 1 12rem;
+  min-width: 10rem;
+  max-width: 22rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  background: var(--input-bg);
+  color: var(--text);
+}
+
 .recurrence-subheading {
   font-size: 0.95rem;
   font-weight: 600;

@@ -52,15 +52,6 @@
     }
     .sidebar-brand h1 { font-size: 1.1rem; color: var(--accent); font-weight: 600; }
     .sidebar-brand p { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
-    .search-box { padding: 0 1rem 1rem; }
-    .search-box label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.35rem; }
-    .search-box input {
-      width: 100%; padding: 0.5rem 0.75rem;
-      border: 1px solid var(--border); border-radius: var(--radius);
-      background: var(--bg); color: var(--text); font-size: 0.875rem;
-    }
-    .search-box input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-    .search-hint { font-size: 0.7rem; color: var(--muted); margin-top: 0.35rem; }
     .toc { list-style: none; }
     .toc a {
       display: block; padding: 0.4rem 1.25rem;
@@ -82,7 +73,6 @@
       border-bottom: 1px solid var(--border);
     }
     section:last-child { border-bottom: none; }
-    section.hidden-by-search { display: none; }
     h2 {
       font-size: 1.5rem; margin-bottom: 0.75rem;
       color: var(--text); scroll-margin-top: 1rem;
@@ -117,7 +107,6 @@
     .faq-item summary::before { content: '▸ '; color: var(--accent); }
     .faq-item[open] summary::before { content: '▾ '; }
     .faq-item p { padding-left: 1.25rem; color: var(--muted); font-size: 0.9rem; }
-    mark.search-hit { background: rgba(255,193,7,0.35); color: inherit; padding: 0 2px; }
     .steps { counter-reset: step; list-style: none; padding-left: 0; }
     .steps li {
       counter-increment: step; position: relative;
@@ -146,14 +135,14 @@
         <h1>App Stats</h1>
         <p>Documentation utilisateur</p>
       </div>
-      <div class="search-box">
-        <label for="doc-search">Rechercher par mot-clé</label>
-        <input type="search" id="doc-search" placeholder="Ex : filtre, xlsx, graphique…" autocomplete="off">
-        <p class="search-hint" id="search-status">Tapez pour filtrer les sections</p>
-      </div>
       <ul class="toc" id="toc">
         <li><a href="#intro">Introduction</a></li>
         <li><a href="#debuter">Guide du débutant</a></li>
+        <li><a href="#pas-a-pas">Exemples pas à pas</a></li>
+        <li class="toc-sub"><a href="#pas-a-pas-rapport-rapide">Rapport rapide</a></li>
+        <li class="toc-sub"><a href="#pas-a-pas-rapport-detaille">Rapport détaillé</a></li>
+        <li class="toc-sub"><a href="#pas-a-pas-preset">Preset global</a></li>
+        <li class="toc-sub"><a href="#pas-a-pas-layout">Mise en page PDF</a></li>
         <li><a href="#import">Import de fichiers</a></li>
         <li><a href="#colonnes">Colonnes et formatage</a></li>
         <li class="toc-sub"><a href="#formats-date">Formats de date</a></li>
@@ -179,6 +168,7 @@
         <li class="toc-sub"><a href="#preset-global">Preset global</a></li>
         <li class="toc-sub"><a href="#preset-import-header">Preset import (en-tête)</a></li>
         <li><a href="#rapport-rapide">Rapport rapide</a></li>
+        <li><a href="#outils-excel">Outils Excel</a></li>
         <li><a href="#pdf">Rapport PDF</a></li>
         <li><a href="#faq">FAQ</a></li>
         <li><a href="#glossaire">Glossaire</a></li>
@@ -195,7 +185,7 @@
           de filtrer les données et de produire des statistiques mensuelles, graphiques et rapports PDF.
         </p>
         <p>Cette page s'ouvre dans un nouvel onglet pour que vous puissiez consulter l'aide tout en travaillant dans l'application.</p>
-        <p class="note">Documentation mise à jour le 29/07/2026 — filtre global (activation par pile), mise en page PDF, rapport détaillé filtre courant, presets complets (globalFilter, layout, filterPayload), couleur accent #235da9.</p>
+        <p class="note">Documentation mise à jour le 30/07/2026 — rapport rapide (5 étapes, filtres globaux), rapport détaillé en en-tête, preset currentFilterReport, outils Excel, comptages manuels (performance).</p>
         <div class="tip">
           <strong>Pour qui ?</strong>
           Les sections « Guide du débutant » et les exemples conviennent aux nouveaux utilisateurs.
@@ -241,6 +231,58 @@
           <br>2. Créez une pile « Tickets fermés » avec filtre texte : Statut contient « Fermé ».
           <br>3. Dans Valeurs, vous verrez combien de tickets fermés existent par mois.
         </div>
+      </section>
+
+      <section id="pas-a-pas" data-keywords="exemple pas à pas tutoriel procédure rapport preset layout surfiltre">
+        <h2>Exemples pas à pas</h2>
+        <p>Procédures détaillées pour les fonctionnalités les plus complexes. Utilisez le sommaire à gauche pour accéder directement à chaque scénario.</p>
+
+        <h3 id="pas-a-pas-rapport-rapide">Rapport rapide (5 étapes)</h3>
+        <p><strong>Objectif :</strong> produire un PDF à partir d'un fichier Excel et d'un preset global, en choisissant le filtre global à appliquer.</p>
+        <ol class="steps">
+          <li><strong>Préparer</strong> — un fichier .xlsx et un preset global JSON (voir <a href="#pas-a-pas-preset">Preset global</a>). Dans Filtre global, cochez <strong>Rap. rapide</strong> sur les piles à proposer dans l'assistant.</li>
+          <li><strong>Étape 1 — XLSX</strong> — Menu ☰ → Rapport rapide → Choisir le fichier → Valider et continuer.</li>
+          <li><strong>Étape 2 — Preset</strong> — Choisir le preset global → Suivant et appliquer le preset (import + filtres + graphiques).</li>
+          <li><strong>Étape 3 — Filtres globaux</strong> — Cochez le(s) filtre(s) à activer pour ce rapport. <em>Un seul filtre est recommandé.</em> → Appliquer les filtres et continuer.</li>
+          <li><strong>Étape 4 — Période</strong> — Plage de dates PDF, vérifiez les graphiques. Le nom du document est prérempli : <code>[preset] - [filtre]</code> (modifiable).</li>
+          <li><strong>Étape 5 — Impression</strong> — Générer le rapport → PDF téléchargé. Procédure avec emplacements captures : <code>RAPPORT_RAPIDE_PROCEDURE.txt</code>.</li>
+        </ol>
+
+        <h3 id="pas-a-pas-rapport-detaille">Rapport détaillé filtre courant</h3>
+        <p><strong>Objectif :</strong> PDF paginé avec synthèse puis une section par pile/calcul du filtre courant.</p>
+        <ol class="steps">
+          <li>Configurez vos piles et calculs dans l'onglet <kbd>Filtre courant</kbd>.</li>
+          <li>Cliquez <kbd>Générer un rapport détaillé</kbd> (en-tête, à côté de « Exporter rapport PDF »).</li>
+          <li>Dans la modale : titre, description, couleur d'accent, sélection des éléments (↑ ↓ pour l'ordre), colonnes à afficher.</li>
+          <li>Cliquez <kbd>Générer le PDF</kbd> — page 1 = tableau récapitulatif, pages suivantes = détail par élément.</li>
+          <li>Pour réutiliser la configuration : exportez un preset global (sections <em>currentFilterReport</em> et <em>layout</em>).</li>
+        </ol>
+
+        <h3 id="pas-a-pas-preset">Créer et réutiliser un preset global</h3>
+        <ol class="steps">
+          <li>Importez et configurez un tableau type (filtres global/courant/mensuel, graphiques, mise en page).</li>
+          <li>Filtre global : cochez <strong>Actif</strong> et <strong>Rap. rapide</strong> selon vos besoins.</li>
+          <li>Menu ☰ → Presets → Export → <strong>Preset global</strong> → enregistrez le .json.</li>
+          <li>Sur un autre poste ou tableau : Presets → Import → choisissez les sections (remplacer ou fusionner).</li>
+          <li>Rapport rapide : le preset sert à l'étape 2 ; seul le fichier XLSX change à chaque rapport.</li>
+        </ol>
+
+        <h3 id="pas-a-pas-layout">Mise en page PDF et preset layout</h3>
+        <ol class="steps">
+          <li>Onglet <kbd>Mise en page</kbd> : choisissez la couleur d'accent (#235da9 par défaut).</li>
+          <li>Réordonnez les blocs (↑ ↓) : tableau Valeurs, graphiques, commentaires, sauts de page.</li>
+          <li>Pour chaque bloc graphique, sélectionnez l'onglet graphique dans la liste déroulante.</li>
+          <li>Ajoutez commentaires ou légendes via <kbd>+ Commentaire</kbd> / <kbd>+ Légende</kbd>.</li>
+          <li>Exportez la section <em>layout</em> ou le preset global pour conserver l'ordre à l'import.</li>
+        </ol>
+
+        <h3 id="pas-a-pas-surfiltre">Surfiltre en chaîne (filtre courant)</h3>
+        <ol class="steps">
+          <li>Créez la pile A « Tickets clos » (filtre texte sur le statut).</li>
+          <li>Créez un compteur B sur la pile A (somme d'une colonne montant).</li>
+          <li>Créez la pile C : premier filtre = type <strong>Surfiltre</strong>, source = calcul B ; ajoutez un filtre texte « urgent ».</li>
+          <li>Cliquez <kbd>Afficher le résultat</kbd> sous la pile C pour voir les lignes filtrées (actualisation manuelle).</li>
+        </ol>
       </section>
 
       <section id="import" data-keywords="import xlsx excel fichier ajouter fusionner append merge">
@@ -307,13 +349,15 @@
         <ul>
           <li><kbd>Importer un fichier .xlsx</kbd> — ouvre l'assistant d'import.</li>
           <li><kbd>Presets</kbd> — ouvre la fenêtre d'import/export de presets (global ou par section).</li>
-          <li><kbd>Rapport rapide</kbd> — assistant guidé : fichier XLSX + preset global + période PDF (voir <a href="#rapport-rapide">Rapport rapide</a>).</li>
+          <li><kbd>Rapport rapide</kbd> — assistant guidé : XLSX + preset global + filtres globaux + période PDF (voir <a href="#rapport-rapide">Rapport rapide</a>).</li>
+          <li><kbd>Outils de transformation Excel</kbd> — page séparée : fusion de colonnes, séparateur, occurrences (voir <a href="#outils-excel">Outils Excel</a>).</li>
           <li><kbd>Documentation</kbd> — ouvre cette page d'aide dans un nouvel onglet.</li>
           <li><kbd>Thème clair</kbd> / <kbd>Thème sombre</kbd> — bascule entre thèmes (mémorisé dans le navigateur).</li>
         </ul>
         <p>À droite de l'en-tête :</p>
         <ul>
-          <li><kbd>Exporter rapport PDF</kbd> — tableau Valeurs + tous les graphiques configurés (plage de l'onglet Valeurs).</li>
+          <li><kbd>Générer un rapport détaillé</kbd> — PDF filtre courant (piles, calculs, colonnes sélectionnables).</li>
+          <li><kbd>Exporter rapport PDF</kbd> — tableau Valeurs + graphiques selon Mise en page (plage de l'onglet Valeurs).</li>
         </ul>
         <p>Les onglets de tableaux (noms des jeux de données importés) se trouvent sous le titre, à côté du menu.</p>
         <h3 id="onglet-donnees">Données</h3>
@@ -327,10 +371,10 @@
         <p>Les piles du <strong>filtre global</strong> s'appliquent <em>en amont</em> sur les données importées, avant le filtre courant, le filtre mensuel, Valeurs et Graphiques.</p>
         <ul>
           <li>Chaque pile possède une case <strong>Actif</strong> : seules les piles activées filtrent les données.</li>
+          <li>Case <strong>Rap. rapide</strong> : la pile apparaît à l'étape 3 de l'assistant rapport rapide pour choix avant génération PDF.</li>
           <li>Il n'y a pas de case générale d'activation du filtre global.</li>
-          <li>Un bandeau affiche le nombre de lignes restantes après application des piles globales actives.</li>
+          <li>Bandeau « N lignes restantes » : bouton <kbd>Afficher comptage</kbd> / <kbd>Actualiser comptage</kbd> (pas de recalcul automatique à chaque frappe).</li>
           <li>Mêmes types de filtres que le filtre courant (texte, date, nombre, surfiltre sur pile…).</li>
-          <li>Pas de tableau « Résultat après filtrage » dans cette vue.</li>
         </ul>
         <div class="tip">
           <strong>Exemple</strong>
@@ -381,10 +425,10 @@
         </ul>
         <p>Comme en filtre mensuel, un compteur ou une analyse peut prendre comme source une <strong>pile</strong> ou un <strong>calcul précédent</strong> dans la sidebar.</p>
         <h3>Résultat après filtrage et export XLSX</h3>
-        <p>Sous les filtres d'une pile <strong>ou d'un calcul/compteur/analyse</strong>, la section <strong>Résultat après filtrage</strong> affiche un aperçu des lignes retenues (ou la valeur calculée).
-        Le bouton <kbd>Exporter XLSX</kbd> télécharge les lignes filtrées (colonnes du tableau).</p>
+        <p>Sous les filtres d'une pile <strong>ou d'un calcul/compteur/analyse</strong>, cliquez <kbd>Afficher le résultat</kbd> pour voir le tableau des lignes retenues (actualisation manuelle pour de meilleures performances).
+        Le bouton <kbd>Exporter XLSX</kbd> télécharge les lignes filtrées.</p>
         <h3>Rapport détaillé PDF</h3>
-        <p>Bouton <kbd>Générer un détaillé</kbd> (à côté de <kbd>Exporter XLSX</kbd>) ouvre une modale :</p>
+        <p>Bouton <kbd>Générer un rapport détaillé</kbd> dans l'<strong>en-tête</strong> (à côté de « Exporter rapport PDF ») ouvre une modale :</p>
         <ul>
           <li>Titre et description du rapport</li>
           <li>Couleur d'accent (défaut : bleu #235da9, ou couleur de l'onglet Mise en page)</li>
@@ -560,6 +604,7 @@
             <tr><td>monthlyFilter</td><td>Piles mensuelles, calculs, colonne date, ordre sidebar</td></tr>
             <tr><td>values</td><td>Plage de dates Valeurs + lignes PDF décochées (exclusions par nom)</td></tr>
             <tr><td>layout</td><td>Couleur accent PDF + ordre des blocs (tableau, graphiques, commentaires…)</td></tr>
+            <tr><td>currentFilterReport</td><td>Titre, description, couleur, éléments et colonnes du rapport détaillé filtre courant</td></tr>
             <tr><td>charts</td><td>Tous les sous-onglets graphiques (plages, séries, styles, légendes)</td></tr>
           </tbody>
         </table>
@@ -581,25 +626,37 @@
         <p>Menu ☰ → <kbd>Presets</kbd> :</p>
         <ul>
           <li><strong>Import</strong> — charger un preset global ou par section (JSON).</li>
-          <li><strong>Export</strong> — exporter preset global ou une section (import, globalFilter, currentFilter, monthlyFilter, values, layout, charts).</li>
+          <li><strong>Export</strong> — exporter preset global ou une section (import, globalFilter, currentFilter, monthlyFilter, values, layout, currentFilterReport, charts).</li>
         </ul>
       </section>
 
-      <section id="rapport-rapide" data-keywords="rapport rapide wizard assistant preset global xlsx période pdf guidé">
+      <section id="rapport-rapide" data-keywords="rapport rapide wizard assistant preset global xlsx période pdf guidé filtres globaux">
         <h2>Rapport rapide</h2>
-        <p>Assistant en 4 étapes (menu ☰ → <kbd>Rapport rapide</kbd>) pour produire un PDF sans configurer manuellement l'application :</p>
+        <p>Assistant en <strong>5 étapes</strong> (menu ☰ → <kbd>Rapport rapide</kbd>) pour produire un PDF sans configurer manuellement l'application :</p>
         <ol class="steps">
           <li><strong>Fichier XLSX</strong> — sélectionnez le fichier source (aucun import à cette étape).</li>
-          <li><strong>Preset global</strong> — chargez un JSON preset global ; l'import utilise alors la <strong>ligne de titre</strong>, les colonnes et formateurs de la section import du preset, puis applique filtres et graphiques.</li>
-          <li><strong>Période et génération</strong> — choisissez la plage de dates pour le PDF (isolée de l'onglet Valeurs), vérifiez le récapitulatif des graphiques, nommez le document et générez.</li>
-          <li><strong>Impression</strong> — le navigateur ouvre la page d'impression (Ctrl+P).</li>
+          <li><strong>Preset global</strong> — chargez un JSON preset global ; l'import utilise la section <em>import</em>, puis applique filtres, graphiques et mise en page.</li>
+          <li><strong>Filtres globaux</strong> — choisissez les piles marquées « Rap. rapide » dans Filtre global. <em>L'application d'un seul filtre est recommandée.</em> Seules les piles cochées restent actives pour le PDF.</li>
+          <li><strong>Période et génération</strong> — plage de dates PDF (isolée de l'onglet Valeurs), récapitulatif graphiques, nom du document (défaut : <code>[preset] - [filtre]</code>).</li>
+          <li><strong>Impression</strong> — le PDF est téléchargé ; message de confirmation dans la modale.</li>
         </ol>
         <div class="tip">
           <strong>Prérequis</strong>
-          Le preset global doit contenir au minimum les sections <em>import</em> et <em>monthlyFilter</em> (ou équivalent).
-          Les lignes Valeurs décochées (colonne PDF) sont reprises depuis la section <em>values</em> du preset.
+          Cochez <strong>Rap. rapide</strong> sur les piles globales à proposer à l'étape 3.
+          Le preset global doit contenir la section <em>import</em>. Les lignes PDF décochées viennent de la section <em>values</em>.
         </div>
-        <div class="note">Le rapport rapide ne modifie pas la plage de dates affichée dans l'onglet Valeurs de l'application : seul le PDF utilise la période choisie dans le wizard.</div>
+        <div class="note">La période du wizard n'altère pas l'onglet Valeurs. Voir aussi <a href="#pas-a-pas-rapport-rapide">Exemple pas à pas — Rapport rapide</a> et <code>RAPPORT_RAPIDE_PROCEDURE.txt</code>.</div>
+      </section>
+
+      <section id="outils-excel" data-keywords="outils excel transformation merge séparateur occurrences customarray xlsx">
+        <h2>Outils de transformation Excel</h2>
+        <p>Menu ☰ → <kbd>Outils de transformation Excel</kbd> ouvre une page standalone (nouvel onglet) pour préparer des fichiers .xlsx <em>avant</em> import dans App Stats :</p>
+        <ul>
+          <li><strong>Fusion de colonnes</strong> — concaténer plusieurs colonnes en une.</li>
+          <li><strong>Séparateur</strong> — scinder une colonne selon un délimiteur.</li>
+          <li><strong>Occurrences</strong> — analyser ou transformer les occurrences de valeurs.</li>
+        </ul>
+        <p>Export PDF disponible depuis cette page. Lien <kbd>← Retour à App Stats</kbd> en haut pour revenir à l'application.</p>
       </section>
 
       <section id="pdf" data-keywords="pdf rapport export imprimer graphique multiple layout accent détaillé">
@@ -612,7 +669,7 @@
           <li><strong>Sauts de page</strong> — entre blocs si configurés.</li>
         </ol>
         <p>La <strong>couleur d'accent</strong> (défaut #235da9) colore les en-têtes de tableaux. Les graphiques sont rendus automatiquement à l'export.</p>
-        <p>Le <strong>rapport détaillé filtre courant</strong> (bouton « Générer un détaillé ») est un PDF séparé, centré sur les piles/calculs du filtre courant — voir <a href="#filtre-courant">Filtre courant</a>.</p>
+        <p>Le <strong>rapport détaillé filtre courant</strong> (<kbd>Générer un rapport détaillé</kbd> en en-tête) est un PDF séparé — voir <a href="#filtre-courant">Filtre courant</a> et <a href="#pas-a-pas-rapport-detaille">Exemple pas à pas</a>.</p>
       </section>
 
       <section id="faq" data-keywords="faq question problème aide erreur">
@@ -627,12 +684,11 @@
         </details>
         <details class="faq-item">
           <summary>Comment générer un rapport détaillé des filtres courants ?</summary>
-          <p>Onglet Filtre courant → <kbd>Générer un détaillé</kbd>. Sélectionnez piles/calculs, colonnes et couleur, puis téléchargez le PDF (page synthèse + détail par élément).</p>
+          <p>En-tête → <kbd>Générer un rapport détaillé</kbd>. Sélectionnez piles/calculs, colonnes et couleur, puis téléchargez le PDF.</p>
         </details>
         <details class="faq-item">
           <summary>Comment utiliser le rapport rapide ?</summary>
-          <p>Menu ☰ → Rapport rapide. Sélectionnez le XLSX, puis un preset global exporté depuis votre configuration type.
-          La période PDF se choisit à l'étape 3, après l'import automatique.</p>
+          <p>Menu ☰ → Rapport rapide. XLSX → preset global → choix des filtres globaux (Rap. rapide) → période et nom du document → génération PDF.</p>
         </details>
         <details class="faq-item">
           <summary>Le rapport rapide s'ouvre-t-il au démarrage ?</summary>
@@ -713,7 +769,8 @@
             <tr><td>V/G</td><td>Case « Valeurs / Graphiques » : affiche ou masque une pile dans la matrice et les graphiques.</td></tr>
             <tr><td>Sous-onglet graphique</td><td>Graphique indépendant (plage, type, séries) dans l'onglet Graphiques.</td></tr>
             <tr><td>Rapport rapide</td><td>Assistant guidé XLSX + preset global → PDF imprimable.</td></tr>
-            <tr><td>Preset global</td><td>Fichier JSON regroupant import, globalFilter, filtres, values, layout, graphiques.</td></tr>
+            <tr><td>Rap. rapide</td><td>Case filtre global : pile proposée à l'étape 3 du rapport rapide.</td></tr>
+            <tr><td>Preset global</td><td>Fichier JSON regroupant import, globalFilter, filtres, values, layout, currentFilterReport, graphiques.</td></tr>
           </tbody>
         </table>
       </section>
@@ -722,37 +779,8 @@
 
   <script>
     (function () {
-      const searchInput = document.getElementById('doc-search');
-      const searchStatus = document.getElementById('search-status');
       const sections = Array.from(document.querySelectorAll('main section'));
       const tocLinks = Array.from(document.querySelectorAll('.toc a'));
-
-      function normalize(s) {
-        return s.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '');
-      }
-
-      function runSearch() {
-        const q = normalize(searchInput.value.trim());
-        let visible = 0;
-        sections.forEach(function (sec) {
-          const keywords = sec.getAttribute('data-keywords') || '';
-          const text = normalize(sec.textContent + ' ' + keywords);
-          const match = !q || text.includes(q);
-          sec.classList.toggle('hidden-by-search', !match);
-          if (match) visible++;
-        });
-        tocLinks.forEach(function (link) {
-          const id = link.getAttribute('href').slice(1);
-          const sec = document.getElementById(id);
-          const show = sec && !sec.classList.contains('hidden-by-search');
-          link.parentElement.style.display = show ? '' : 'none';
-        });
-        searchStatus.textContent = q
-          ? visible + ' section(s) correspondante(s)'
-          : 'Tapez pour filtrer les sections';
-      }
-
-      searchInput.addEventListener('input', runSearch);
 
       const observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {

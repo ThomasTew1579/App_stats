@@ -104,6 +104,15 @@
     return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
   }
 
+  function sanitizeFileName(name) {
+    const cleaned = String(name || "")
+      .trim()
+      .replace(/[<>:"/\\|?*\u0000-\u001f]+/g, "_")
+      .replace(/\s+/g, " ")
+      .slice(0, 120);
+    return cleaned || "rapport";
+  }
+
   function cloneData(data) {
     return data.map((row) => (row ? row.slice() : []));
   }
@@ -746,12 +755,26 @@
     rowDiv.appendChild(rowHint);
     pdfGrid.appendChild(rowDiv);
 
-    ["pdfTitle", "pdfDescription"].forEach((key) => {
+    const nameDiv = document.createElement("div");
+    nameDiv.className = "form-group";
+    nameDiv.innerHTML = "<label for=\"rec-pdf-title\">Nom du rapport</label>";
+    const nameInp = document.createElement("input");
+    nameInp.type = "text";
+    nameInp.id = "rec-pdf-title";
+    nameInp.placeholder = "Rapport de récurrence";
+    nameInp.value = step.params.pdfTitle || "";
+    nameInp.addEventListener("input", () => {
+      step.params.pdfTitle = nameInp.value;
+    });
+    nameDiv.appendChild(nameInp);
+    pdfGrid.appendChild(nameDiv);
+
+    ["pdfDescription"].forEach((key) => {
       const div = document.createElement("div");
       div.className = "form-group full-width";
       const lbl = document.createElement("label");
-      lbl.textContent = key === "pdfTitle" ? "Titre PDF" : "Description PDF";
-      const inp = key === "pdfDescription" ? document.createElement("textarea") : document.createElement("input");
+      lbl.textContent = "Description PDF";
+      const inp = document.createElement("textarea");
       inp.type = "text";
       inp.value = step.params[key];
       inp.rows = 2;
@@ -1263,6 +1286,22 @@
         });
         controls.appendChild(rowInput);
 
+        const nameLabel = document.createElement("label");
+        nameLabel.htmlFor = "result-pdf-title-" + res.stepId;
+        nameLabel.textContent = "Nom du rapport :";
+        controls.appendChild(nameLabel);
+
+        const nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.id = "result-pdf-title-" + res.stepId;
+        nameInput.className = "recurrence-report-name-input";
+        nameInput.placeholder = "Rapport de récurrence";
+        nameInput.value = step.params.pdfTitle || "";
+        nameInput.addEventListener("input", () => {
+          step.params.pdfTitle = nameInput.value;
+        });
+        controls.appendChild(nameInput);
+
         const pdfBtn = document.createElement("button");
         pdfBtn.type = "button";
         pdfBtn.className = "btn btn-secondary btn-sm";
@@ -1487,7 +1526,12 @@
       doc.text("Page " + i + " / " + total, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 6, { align: "center" });
     }
 
-    doc.save((sourceFileName.replace(/\.xlsx?$/i, "") || "rapport") + "_recurrence.pdf");
+    doc.save(
+      sanitizeFileName(
+        (step.params.pdfTitle || "").trim()
+          || (sourceFileName.replace(/\.xlsx?$/i, "") || "rapport") + "_recurrence",
+      ) + ".pdf",
+    );
   }
 
   /* ── Presets ── */
