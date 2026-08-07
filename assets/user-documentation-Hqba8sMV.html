@@ -176,7 +176,7 @@
     </nav>
 
     <main class="content" id="main">
-      <a href="./" class="back-app">← Retour à l'application</a>
+      <p class="sidebar-brand-note">Guide intégré — fermez cette fenêtre pour revenir à l'application.</p>
 
       <section id="intro" data-keywords="introduction présentation app stats excel analyse">
         <h2>Introduction</h2>
@@ -184,8 +184,8 @@
           <strong>App Stats</strong> permet d'importer des fichiers Excel (.xlsx), de configurer vos colonnes,
           de filtrer les données et de produire des statistiques mensuelles, graphiques et rapports PDF.
         </p>
-        <p>Cette page s'ouvre dans un nouvel onglet pour que vous puissiez consulter l'aide tout en travaillant dans l'application.</p>
-        <p class="note">Documentation mise à jour le 30/07/2026 — rapport rapide (5 étapes, filtres globaux), rapport détaillé en en-tête, preset currentFilterReport, outils Excel, comptages manuels (performance).</p>
+        <p>Cette documentation s'affiche dans une modale plein écran intégrée à l'application (menu ☰ → Documentation).</p>
+        <p class="note">Documentation mise à jour le 07/08/2026 — tableau unique, suffixe PDF filtres globaux, rapport rapide 6 étapes (PDF multiples), presets .json.gz, outils Excel intégrés, comptages manuels.</p>
         <div class="tip">
           <strong>Pour qui ?</strong>
           Les sections « Guide du débutant » et les exemples conviennent aux nouveaux utilisateurs.
@@ -237,15 +237,16 @@
         <h2>Exemples pas à pas</h2>
         <p>Procédures détaillées pour les fonctionnalités les plus complexes. Utilisez le sommaire à gauche pour accéder directement à chaque scénario.</p>
 
-        <h3 id="pas-a-pas-rapport-rapide">Rapport rapide (5 étapes)</h3>
-        <p><strong>Objectif :</strong> produire un PDF à partir d'un fichier Excel et d'un preset global, en choisissant le filtre global à appliquer.</p>
+        <h3 id="pas-a-pas-rapport-rapide">Rapport rapide (6 étapes)</h3>
+        <p><strong>Objectif :</strong> produire un ou plusieurs PDF à partir d'un fichier Excel/CSV et d'un preset global, en choisissant le filtre global à appliquer.</p>
         <ol class="steps">
-          <li><strong>Préparer</strong> — un fichier .xlsx et un preset global JSON (voir <a href="#pas-a-pas-preset">Preset global</a>). Dans Filtre global, cochez <strong>Rap. rapide</strong> sur les piles à proposer dans l'assistant.</li>
-          <li><strong>Étape 1 — XLSX</strong> — Menu ☰ → Rapport rapide → Choisir le fichier → Valider et continuer.</li>
+          <li><strong>Préparer</strong> — un fichier .xlsx ou .csv et un preset global JSON ou .json.gz (voir <a href="#pas-a-pas-preset">Preset global</a>). Dans Filtre global, cochez <strong>Rap. rapide</strong> sur les piles à proposer dans l'assistant.</li>
+          <li><strong>Étape 1 — Données</strong> — Menu ☰ → Rapport rapide → Choisir le fichier → Valider et continuer.</li>
           <li><strong>Étape 2 — Preset</strong> — Choisir le preset global → Suivant et appliquer le preset (import + filtres + graphiques).</li>
-          <li><strong>Étape 3 — Filtres globaux</strong> — Cochez le(s) filtre(s) à activer pour ce rapport. <em>Un seul filtre est recommandé.</em> → Appliquer les filtres et continuer.</li>
-          <li><strong>Étape 4 — Période</strong> — Plage de dates PDF, vérifiez les graphiques. Le nom du document est prérempli : <code>[preset] - [filtre]</code> (modifiable).</li>
-          <li><strong>Étape 5 — Impression</strong> — Générer le rapport → PDF téléchargé. Procédure avec emplacements captures : <code>RAPPORT_RAPIDE_PROCEDURE.txt</code>.</li>
+          <li><strong>Étape 3 — Filtres globaux</strong> — Cochez le(s) filtre(s) à activer. <em>Un seul filtre est recommandé.</em> → Appliquer et continuer.</li>
+          <li><strong>Étape 4 — Période</strong> — Plage de dates PDF, vérifiez les graphiques. Nom du document : <code>[preset] - [filtre]</code> (modifiable).</li>
+          <li><strong>Étape 5 — Génération PDF</strong> — Cochez les PDF à produire (rapport principal, occurrences, détail filtres, rapport détaillé).</li>
+          <li><strong>Étape 6 — Terminé</strong> — Récapitulatif ; les fichiers portent en suffixe les piles globales actives.</li>
         </ol>
 
         <h3 id="pas-a-pas-rapport-detaille">Rapport détaillé filtre courant</h3>
@@ -285,17 +286,10 @@
         </ol>
       </section>
 
-      <section id="import" data-keywords="import xlsx excel fichier ajouter fusionner append merge">
+      <section id="import" data-keywords="import xlsx csv excel fichier remplacer">
         <h2>Import de fichiers</h2>
-        <h3>Modes d'import</h3>
-        <table>
-          <thead><tr><th>Mode</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td>Nouveau tableau</td><td>Crée un onglet de données indépendant.</td></tr>
-            <tr><td>Ajouter</td><td>Ajoute des lignes à un tableau existant.</td></tr>
-            <tr><td>Fusionner (ID)</td><td>Met à jour les lignes existantes selon une colonne identifiant.</td></tr>
-          </tbody>
-        </table>
+        <p>L'application ne traite qu'<strong>un seul tableau</strong> à la fois. Chaque import (.xlsx, .xls ou .csv via le menu) <strong>remplace</strong> le tableau en cours (filtres, graphiques et mise en page associés sont réinitialisés sauf si un preset les réapplique à la validation).</p>
+        <p>Dans la fenêtre d'import, indiquez le <strong>nom du tableau</strong> (affiché dans l'en-tête), la ligne de titre des colonnes, les colonnes à importer et leurs formateurs.</p>
         <h3>Presets d'import</h3>
         <p>Dans la fenêtre d'import, la section <strong>Presets d'import</strong> permet de mémoriser la ligne d'en-tête,
         les colonnes cochées, les formateurs (dont le format source date) et les filtres du tableau actif. Enregistrez, rechargez ou exportez en JSON.
@@ -330,7 +324,7 @@
 
       <section id="navigation" data-keywords="navigation onglet vue barre footer switcher en-tête header">
         <h2>Navigation et onglets</h2>
-        <p>La barre du bas permet de changer de vue. Plusieurs tableaux peuvent coexister via les onglets en haut.</p>
+        <p>La barre du bas permet de changer de vue. Un seul jeu de données est chargé à la fois ; son nom apparaît dans l'en-tête à côté du titre.</p>
         <table>
           <thead><tr><th>Onglet</th><th>Rôle</th></tr></thead>
           <tbody>
@@ -347,19 +341,19 @@
         <h3 id="en-tete">Barre d'en-tête</h3>
         <p>La barre d'en-tête est compacte. Les actions principales sont regroupées dans le <strong>menu burger</strong> (☰) à gauche du titre :</p>
         <ul>
-          <li><kbd>Importer un fichier .xlsx</kbd> — ouvre l'assistant d'import.</li>
-          <li><kbd>Presets</kbd> — ouvre la fenêtre d'import/export de presets (global ou par section).</li>
-          <li><kbd>Rapport rapide</kbd> — assistant guidé : XLSX + preset global + filtres globaux + période PDF (voir <a href="#rapport-rapide">Rapport rapide</a>).</li>
-          <li><kbd>Outils de transformation Excel</kbd> — page séparée : fusion de colonnes, séparateur, occurrences (voir <a href="#outils-excel">Outils Excel</a>).</li>
-          <li><kbd>Documentation</kbd> — ouvre cette page d'aide dans un nouvel onglet.</li>
+          <li><kbd>Importer des données…</kbd> — assistant d'import (.xlsx, .xls ou .csv).</li>
+          <li><kbd>Presets</kbd> — ouvre la fenêtre d'import/export de presets (global ou par section, JSON ou .json.gz).</li>
+          <li><kbd>Rapport rapide</kbd> — assistant guidé en 6 étapes : données + preset + filtres globaux + période + génération PDF (voir <a href="#rapport-rapide">Rapport rapide</a>).</li>
+          <li><kbd>Détail des filtres (PDF)</kbd> — synthèse PDF de tous les filtres (global, courant, mensuel).</li>
+          <li><kbd>Outils de transformation Excel</kbd> — modale intégrée : fusion, séparateur, occurrences (voir <a href="#outils-excel">Outils Excel</a>).</li>
+          <li><kbd>Documentation</kbd> — ouvre cette aide en modale plein écran.</li>
           <li><kbd>Thème clair</kbd> / <kbd>Thème sombre</kbd> — bascule entre thèmes (mémorisé dans le navigateur).</li>
         </ul>
-        <p>À droite de l'en-tête :</p>
+        <p>À droite de l'en-tête : le <strong>nom du tableau actif</strong>, puis :</p>
         <ul>
           <li><kbd>Générer un rapport détaillé</kbd> — PDF filtre courant (piles, calculs, colonnes sélectionnables).</li>
-          <li><kbd>Exporter rapport PDF</kbd> — tableau Valeurs + graphiques selon Mise en page (plage de l'onglet Valeurs).</li>
+          <li><kbd>Exporter rapport PDF</kbd> — tableau Valeurs + graphiques selon Mise en page (plage de l'onglet Valeurs). Le fichier téléchargé porte en suffixe le nom des piles globales actives.</li>
         </ul>
-        <p>Les onglets de tableaux (noms des jeux de données importés) se trouvent sous le titre, à côté du menu.</p>
         <h3 id="onglet-donnees">Données</h3>
         <p>Affiche le tableau brut importé, avec défilement et recherche dans les lignes. Les colonnes sont élargies pour une meilleure lisibilité ; en-têtes alignés avec le corps du tableau.</p>
         <h3 id="onglet-info">Information</h3>
@@ -454,6 +448,7 @@
       <section id="filtre-mensuel" data-keywords="filtre mensuel mois colonne date pile calcul sidebar compteur analyse">
         <h2>Filtre mensuel</h2>
         <p>Comme le filtre courant, mais les comptages sont répartis <strong>par mois</strong> selon la colonne date choisie en haut de la vue.</p>
+        <p>En haut de l'onglet, sur <strong>une même ligne</strong> : le sélecteur <strong>Colonne date (répartition par mois)</strong> et, si un filtre global est actif, le bouton <kbd>Afficher comptage filtre global</kbd> / <kbd>Actualiser comptage filtre global</kbd> avec pastille d'état (comptage manuel, comme dans les autres vues).</p>
         <p>Les filtres date peuvent être relatifs au mois affiché (début, fin, pendant le mois).</p>
         <h3 id="sidebar-calculs">Sidebar piles et calculs</h3>
         <p>La sidebar liste <strong>toutes les piles</strong> et, en dessous, les <strong>calculs, compteurs et analyses dates</strong>.
@@ -518,6 +513,7 @@
       <section id="graphiques" data-keywords="graphique chart colonne ligne camembert plage custom actualiser barres empilé soustraction filtre courant légende">
         <h2>Graphiques</h2>
         <p>Visualisez les séries visibles dans l'onglet Valeurs (piles avec V/G coché + calculs mensuels).</p>
+        <p>Sous le titre <strong>Graphiques</strong>, la <strong>liste des graphiques</strong> (sous-onglets) apparaît avant le bouton <kbd>+ Ajouter un graphique</kbd>. Double-cliquez un nom pour le renommer.</p>
         <ul>
           <li>Types : <strong>colonnes</strong>, <strong>lignes</strong>, <strong>camembert</strong> (min. 2 séries).</li>
           <li>Plage : toutes les dates, année, mois ou <strong>plage personnalisée</strong> (date début / fin).</li>
@@ -564,7 +560,7 @@
           <li>Panneau <strong>Couleurs et styles par valeur</strong> — couleur et type barres/ligne par série.</li>
         </ul>
         <h3 id="multi-graphiques">Plusieurs graphiques</h3>
-        <p>Bouton <strong>+ Ajouter un graphique</strong> : sous-onglets avec noms éditables (double-clic). Chaque graphique a sa propre plage, type, disposition et séries.</p>
+        <p>Le bouton <strong>+ Ajouter un graphique</strong> se trouve à droite de la liste des sous-onglets. Chaque graphique a sa propre plage, type, disposition et séries (noms éditables au double-clic).</p>
         <div class="tip">
           <strong>Export PDF</strong>
           Tous les sous-onglets graphiques sont inclus dans le rapport PDF selon l'ordre défini dans <a href="#mise-en-page">Mise en page</a>. Pensez à actualiser les graphiques avant l'export.
@@ -605,10 +601,12 @@
             <tr><td>values</td><td>Plage de dates Valeurs + lignes PDF décochées (exclusions par nom)</td></tr>
             <tr><td>layout</td><td>Couleur accent PDF + ordre des blocs (tableau, graphiques, commentaires…)</td></tr>
             <tr><td>currentFilterReport</td><td>Titre, description, couleur, éléments et colonnes du rapport détaillé filtre courant</td></tr>
+            <tr><td>quickReport</td><td>Options du rapport rapide : PDF à générer (principal, occurrences, détail filtres, rapport détaillé)</td></tr>
+            <tr><td>transformTool</td><td>Pipeline outils Excel (merge, séparateur, récurrence, filtre date) et filtre date à l'import</td></tr>
             <tr><td>charts</td><td>Tous les sous-onglets graphiques (plages, séries, styles, légendes)</td></tr>
           </tbody>
         </table>
-        <p>À l'import, choisissez les sections à appliquer (remplacer ou fusionner). Le <strong>rapport rapide</strong> utilise un preset global : import via section import, puis sections filtres/graphiques/layout.</p>
+        <p>À l'import, choisissez les sections à appliquer (remplacer ou fusionner). Formats acceptés : <strong>.json</strong> et <strong>.json.gz</strong> (preset compressé, chargement plus rapide pour les gros fichiers). Export global disponible en JSON et en .json.gz depuis la modale Presets.</p>
         <h3>Presets filtres</h3>
         <p>Bouton <kbd>Presets filtres</kbd> (Filtre courant ou mensuel) :</p>
         <ul>
@@ -632,13 +630,14 @@
 
       <section id="rapport-rapide" data-keywords="rapport rapide wizard assistant preset global xlsx période pdf guidé filtres globaux">
         <h2>Rapport rapide</h2>
-        <p>Assistant en <strong>5 étapes</strong> (menu ☰ → <kbd>Rapport rapide</kbd>) pour produire un PDF sans configurer manuellement l'application :</p>
+        <p>Assistant en <strong>6 étapes</strong> (menu ☰ → <kbd>Rapport rapide</kbd>) pour produire un ou plusieurs PDF sans configurer manuellement l'application :</p>
         <ol class="steps">
-          <li><strong>Fichier XLSX</strong> — sélectionnez le fichier source (aucun import à cette étape).</li>
-          <li><strong>Preset global</strong> — chargez un JSON preset global ; l'import utilise la section <em>import</em>, puis applique filtres, graphiques et mise en page.</li>
+          <li><strong>Données</strong> — sélectionnez le fichier source .xlsx ou .csv.</li>
+          <li><strong>Preset global</strong> — chargez un JSON ou .json.gz ; l'import utilise la section <em>import</em>, puis applique filtres, graphiques et mise en page.</li>
           <li><strong>Filtres globaux</strong> — choisissez les piles marquées « Rap. rapide » dans Filtre global. <em>L'application d'un seul filtre est recommandée.</em> Seules les piles cochées restent actives pour le PDF.</li>
-          <li><strong>Période et génération</strong> — plage de dates PDF (isolée de l'onglet Valeurs), récapitulatif graphiques, nom du document (défaut : <code>[preset] - [filtre]</code>).</li>
-          <li><strong>Impression</strong> — le PDF est téléchargé ; message de confirmation dans la modale.</li>
+          <li><strong>Période</strong> — plage de dates PDF (isolée de l'onglet Valeurs), récapitulatif graphiques, nom du document (défaut : <code>[preset] - [filtre]</code>).</li>
+          <li><strong>Génération PDF</strong> — cochez les exports souhaités (préremplis depuis la section preset <em>quickReport</em>) : rapport principal, PDF occurrences, détail des filtres, rapport détaillé filtre courant.</li>
+          <li><strong>Terminé</strong> — récapitulatif des PDF générés ou ignorés ; chaque fichier porte en suffixe le nom des piles globales actives.</li>
         </ol>
         <div class="tip">
           <strong>Prérequis</strong>
@@ -648,15 +647,24 @@
         <div class="note">La période du wizard n'altère pas l'onglet Valeurs. Voir aussi <a href="#pas-a-pas-rapport-rapide">Exemple pas à pas — Rapport rapide</a> et <code>RAPPORT_RAPIDE_PROCEDURE.txt</code>.</div>
       </section>
 
-      <section id="outils-excel" data-keywords="outils excel transformation merge séparateur occurrences customarray xlsx">
+      <section id="outils-excel" data-keywords="outils excel transformation merge séparateur occurrences filtre date csv preset">
         <h2>Outils de transformation Excel</h2>
-        <p>Menu ☰ → <kbd>Outils de transformation Excel</kbd> ouvre une page standalone (nouvel onglet) pour préparer des fichiers .xlsx <em>avant</em> import dans App Stats :</p>
+        <p>Menu ☰ → <kbd>Outils de transformation Excel</kbd> ouvre une modale plein écran intégrée à App Stats pour préparer des fichiers <strong>.xlsx</strong> ou <strong>.csv</strong> <em>avant</em> import dans l'application :</p>
         <ul>
-          <li><strong>Fusion de colonnes</strong> — concaténer plusieurs colonnes en une.</li>
-          <li><strong>Séparateur</strong> — scinder une colonne selon un délimiteur.</li>
-          <li><strong>Occurrences</strong> — analyser ou transformer les occurrences de valeurs.</li>
+          <li><strong>Import</strong> — glisser-déposer ou parcourir (.xlsx / .csv), ou choisir une <strong>pile filtre courant</strong> dans la liste déroulante (résultat filtré de la pile).</li>
+          <li><strong>Filtre date à l'import</strong> — optionnel, sur une colonne date : par <strong>année</strong> (défaut = année courante) ou par <strong>plage début / fin</strong>.</li>
+          <li><strong>Pipeline</strong> — enchaîner les outils dans l'ordre souhaité :
+            <ul>
+              <li><strong>Merge</strong> — fusionner deux colonnes (additif ou soustractif).</li>
+              <li><strong>Séparateur</strong> — scinder une colonne selon un délimiteur.</li>
+              <li><strong>Compteur d'occurrences</strong> — analyser les récurrences avec export PDF détaillé.</li>
+              <li><strong>Filtre date</strong> — filtrer les lignes par année ou plage sur une colonne date.</li>
+            </ul>
+          </li>
+          <li><strong>Export</strong> — télécharger le résultat en .xlsx ou .csv.</li>
+          <li><strong>Presets</strong> — la configuration (ligne d'en-tête, filtre date à l'import, pipeline) est incluse dans le <strong>preset global</strong> (section <em>Outils Excel</em>) et exportable en JSON depuis l'outil.</li>
         </ul>
-        <p>Export PDF disponible depuis cette page. Lien <kbd>← Retour à App Stats</kbd> en haut pour revenir à l'application.</p>
+        <p>Aperçu en temps réel des premières lignes, surlignage des cellules modifiées et colonnes créées.</p>
       </section>
 
       <section id="pdf" data-keywords="pdf rapport export imprimer graphique multiple layout accent détaillé">
@@ -669,6 +677,8 @@
           <li><strong>Sauts de page</strong> — entre blocs si configurés.</li>
         </ol>
         <p>La <strong>couleur d'accent</strong> (défaut #235da9) colore les en-têtes de tableaux. Les graphiques sont rendus automatiquement à l'export.</p>
+        <p><strong>Nom de fichier</strong> — tous les PDF générés (rapport principal, détail filtres, rapport détaillé, occurrences) ajoutent en suffixe le nom des <strong>piles globales actives</strong>, par ex. <code>Rapport — MonTableau - Pile A, Pile B.pdf</code>.</p>
+        <p>Menu ☰ → <kbd>Détail des filtres (PDF)</kbd> produit un PDF récapitulatif de l'ensemble des filtres (global, courant, mensuel).</p>
         <p>Le <strong>rapport détaillé filtre courant</strong> (<kbd>Générer un rapport détaillé</kbd> en en-tête) est un PDF séparé — voir <a href="#filtre-courant">Filtre courant</a> et <a href="#pas-a-pas-rapport-detaille">Exemple pas à pas</a>.</p>
       </section>
 
@@ -688,7 +698,7 @@
         </details>
         <details class="faq-item">
           <summary>Comment utiliser le rapport rapide ?</summary>
-          <p>Menu ☰ → Rapport rapide. XLSX → preset global → choix des filtres globaux (Rap. rapide) → période et nom du document → génération PDF.</p>
+          <p>Menu ☰ → Rapport rapide. Données → preset global → choix des filtres globaux (Rap. rapide) → période et nom du document → sélection des PDF à générer → récapitulatif.</p>
         </details>
         <details class="faq-item">
           <summary>Le rapport rapide s'ouvre-t-il au démarrage ?</summary>
