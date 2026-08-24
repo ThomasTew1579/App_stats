@@ -164,6 +164,8 @@
         <li class="toc-sub"><a href="#multi-graphiques">Plusieurs graphiques</a></li>
         <li class="toc-sub"><a href="#graphiques-courant">Piles filtre courant</a></li>
         <li><a href="#mise-en-page">Mise en page PDF</a></li>
+        <li><a href="#rapport-detaille-onglet">Rapport détaillé</a></li>
+        <li><a href="#rapport-occurrence-onglet">Rapport d'occurrence</a></li>
         <li><a href="#presets">Presets et sauvegarde</a></li>
         <li class="toc-sub"><a href="#preset-global">Preset global</a></li>
         <li class="toc-sub"><a href="#preset-import-header">Preset import (en-tête)</a></li>
@@ -185,7 +187,7 @@
           de filtrer les données et de produire des statistiques mensuelles, graphiques et rapports PDF.
         </p>
         <p>Cette documentation s'affiche dans une modale plein écran intégrée à l'application (menu ☰ → Documentation).</p>
-        <p class="note">Documentation mise à jour le 07/08/2026 — tableau unique, suffixe PDF filtres globaux, rapport rapide 6 étapes (PDF multiples), presets .json.gz, outils Excel intégrés, comptages manuels.</p>
+        <p class="note">Documentation mise à jour le 24/08/2026 — onglets Rapport détaillé et Rapport d'occurrence, Export PDF et Rapport rapide en en-tête, assistant rapport rapide 6 étapes, sélection par boutons dans le rapport détaillé.</p>
         <div class="tip">
           <strong>Pour qui ?</strong>
           Les sections « Guide du débutant » et les exemples conviennent aux nouveaux utilisateurs.
@@ -220,8 +222,8 @@
             réglez la plage, puis <kbd>Actualiser le graphique</kbd>.
           </li>
           <li>
-            <strong>Exporter</strong> — <kbd>Exporter rapport PDF</kbd> (en-tête) inclut le tableau Valeurs et tous vos sous-onglets graphiques.
-            Pour un flux guidé : menu ☰ → <kbd>Rapport rapide</kbd>.
+            <strong>Exporter</strong> — <kbd>Export PDF</kbd> (en-tête) pour choisir et générer un ou plusieurs PDF.
+            Pour un flux guidé : <kbd>Rapport rapide</kbd> (en-tête).
           </li>
         </ol>
         <div class="example">
@@ -237,25 +239,26 @@
         <h2>Exemples pas à pas</h2>
         <p>Procédures détaillées pour les fonctionnalités les plus complexes. Utilisez le sommaire à gauche pour accéder directement à chaque scénario.</p>
 
-        <h3 id="pas-a-pas-rapport-rapide">Rapport rapide (6 étapes)</h3>
+        <h3 id="pas-a-pas-rapport-rapide">Rapport rapide (6 étapes + terminé)</h3>
         <p><strong>Objectif :</strong> produire un ou plusieurs PDF à partir d'un fichier Excel/CSV et d'un preset global, en choisissant le filtre global à appliquer.</p>
         <ol class="steps">
           <li><strong>Préparer</strong> — un fichier .xlsx ou .csv et un preset global JSON ou .json.gz (voir <a href="#pas-a-pas-preset">Preset global</a>). Dans Filtre global, cochez <strong>Rap. rapide</strong> sur les piles à proposer dans l'assistant.</li>
-          <li><strong>Étape 1 — Données</strong> — Menu ☰ → Rapport rapide → Choisir le fichier → Valider et continuer.</li>
-          <li><strong>Étape 2 — Preset</strong> — Choisir le preset global → Suivant et appliquer le preset (import + filtres + graphiques).</li>
-          <li><strong>Étape 3 — Filtres globaux</strong> — Cochez le(s) filtre(s) à activer. <em>Un seul filtre est recommandé.</em> → Appliquer et continuer.</li>
-          <li><strong>Étape 4 — Période</strong> — Plage de dates PDF, vérifiez les graphiques. Nom du document : <code>[preset] - [filtre]</code> (modifiable).</li>
-          <li><strong>Étape 5 — Génération PDF</strong> — Cochez les PDF à produire (rapport principal, occurrences, détail filtres, rapport détaillé).</li>
-          <li><strong>Étape 6 — Terminé</strong> — Récapitulatif ; les fichiers portent en suffixe les piles globales actives.</li>
+          <li><strong>Étape 1 — Données</strong> — En-tête → <kbd>Rapport rapide</kbd> → utiliser les données actuelles ou importer un fichier → Valider.</li>
+          <li><strong>Étape 2 — Preset</strong> — Utiliser le preset actuel ou en importer un nouveau → appliquer le preset.</li>
+          <li><strong>Étape 3 — Génération PDF</strong> — Cochez les PDF à produire (rapport principal, occurrences, détail filtres, rapport détaillé).</li>
+          <li><strong>Étape 4 — Filtres globaux</strong> — Choisissez le(s) filtre(s) à activer. <em>Un seul filtre est recommandé.</em></li>
+          <li><strong>Étape 5 — Période</strong> — Plage de dates PDF (isolée de l'onglet Valeurs).</li>
+          <li><strong>Étape 6 — Paramètres rapport</strong> — Titres par PDF, descriptions, aperçu top récurrence si applicable.</li>
+          <li><strong>Terminé</strong> — Récapitulatif ; les fichiers portent en suffixe les piles globales actives. Bouton « Nouveau rapport (même fichier) » pour relancer avec un autre filtre global.</li>
         </ol>
 
         <h3 id="pas-a-pas-rapport-detaille">Rapport détaillé filtre courant</h3>
         <p><strong>Objectif :</strong> PDF paginé avec synthèse puis une section par pile/calcul du filtre courant.</p>
         <ol class="steps">
           <li>Configurez vos piles et calculs dans l'onglet <kbd>Filtre courant</kbd>.</li>
-          <li>Cliquez <kbd>Générer un rapport détaillé</kbd> (en-tête, à côté de « Exporter rapport PDF »).</li>
-          <li>Dans la modale : titre, description, couleur d'accent, sélection des éléments (↑ ↓ pour l'ordre), colonnes à afficher.</li>
-          <li>Cliquez <kbd>Générer le PDF</kbd> — page 1 = tableau récapitulatif, pages suivantes = détail par élément.</li>
+          <li>Onglet <kbd>Rapport détaillé</kbd> : titre, description, couleur d'accent.</li>
+          <li>Sélectionnez les colonnes et les éléments (piles, calculs) via les boutons — ↑ ↓ pour l'ordre. Les réglages sont mémorisés automatiquement.</li>
+          <li>En-tête → <kbd>Export PDF</kbd> → cochez « Rapport détaillé filtre courant » → Générer.</li>
           <li>Pour réutiliser la configuration : exportez un preset global (sections <em>currentFilterReport</em> et <em>layout</em>).</li>
         </ol>
 
@@ -324,35 +327,34 @@
 
       <section id="navigation" data-keywords="navigation onglet vue barre footer switcher en-tête header">
         <h2>Navigation et onglets</h2>
-        <p>La barre du bas permet de changer de vue. Un seul jeu de données est chargé à la fois ; son nom apparaît dans l'en-tête à côté du titre.</p>
+        <p>La barre d'onglets dans l'en-tête permet de changer de vue. Un seul jeu de données est chargé à la fois.</p>
         <table>
           <thead><tr><th>Onglet</th><th>Rôle</th></tr></thead>
           <tbody>
             <tr><td>Données</td><td>Tableau brut importé</td></tr>
-            <tr><td>Information</td><td>Résumé et statistiques des colonnes</td></tr>
+            <tr><td>Information</td><td>Résumé et statistiques des colonnes ; preset global actif</td></tr>
             <tr><td>Filtre global</td><td>Piles amont appliquées avant filtre courant et mensuel</td></tr>
-            <tr><td>Filtre courant</td><td>Piles, calculs, compteurs et analyses en temps réel ; export XLSX et rapport détaillé PDF</td></tr>
+            <tr><td>Filtre courant</td><td>Piles, calculs, compteurs et analyses en temps réel ; export XLSX</td></tr>
             <tr><td>Filtre mensuel</td><td>Piles, calculs et colonne date pour les stats mensuelles</td></tr>
             <tr><td>Valeurs</td><td>Matrice piles/calculs × mois</td></tr>
             <tr><td>Graphiques</td><td>Visualisation des séries (un ou plusieurs graphiques)</td></tr>
             <tr><td>Mise en page</td><td>Couleur d'accent PDF et ordre des blocs du rapport</td></tr>
+            <tr><td>Rapport détaillé</td><td>Configuration du PDF filtre courant (titre, éléments, colonnes) — export via <kbd>Export PDF</kbd></td></tr>
+            <tr><td>Rapport d'occurrence</td><td>Pipeline Excel : fusion, séparateur, récurrence, filtre date ; PDF occurrences</td></tr>
           </tbody>
         </table>
         <h3 id="en-tete">Barre d'en-tête</h3>
-        <p>La barre d'en-tête est compacte. Les actions principales sont regroupées dans le <strong>menu burger</strong> (☰) à gauche du titre :</p>
+        <p>La barre d'en-tête est compacte. Les actions principales sont regroupées dans le <strong>menu burger</strong> (☰) à gauche des onglets :</p>
         <ul>
           <li><kbd>Importer des données…</kbd> — assistant d'import (.xlsx, .xls ou .csv).</li>
           <li><kbd>Presets</kbd> — ouvre la fenêtre d'import/export de presets (global ou par section, JSON ou .json.gz).</li>
-          <li><kbd>Rapport rapide</kbd> — assistant guidé en 6 étapes : données + preset + filtres globaux + période + génération PDF (voir <a href="#rapport-rapide">Rapport rapide</a>).</li>
-          <li><kbd>Détail des filtres (PDF)</kbd> — synthèse PDF de tous les filtres (global, courant, mensuel).</li>
-          <li><kbd>Outils de transformation Excel</kbd> — modale intégrée : fusion, séparateur, occurrences (voir <a href="#outils-excel">Outils Excel</a>).</li>
           <li><kbd>Documentation</kbd> — ouvre cette aide en modale plein écran.</li>
           <li><kbd>Thème clair</kbd> / <kbd>Thème sombre</kbd> — bascule entre thèmes (mémorisé dans le navigateur).</li>
         </ul>
-        <p>À droite de l'en-tête : le <strong>nom du tableau actif</strong>, puis :</p>
+        <p>À droite de l'en-tête :</p>
         <ul>
-          <li><kbd>Générer un rapport détaillé</kbd> — PDF filtre courant (piles, calculs, colonnes sélectionnables).</li>
-          <li><kbd>Exporter rapport PDF</kbd> — tableau Valeurs + graphiques selon Mise en page (plage de l'onglet Valeurs). Le fichier téléchargé porte en suffixe le nom des piles globales actives.</li>
+          <li><kbd>Rapport rapide</kbd> — assistant guidé en 6 étapes (voir <a href="#rapport-rapide">Rapport rapide</a>).</li>
+          <li><kbd>Export PDF</kbd> — modale pour choisir et générer un ou plusieurs PDF (rapport principal, occurrences, détail filtres, rapport détaillé) à partir de la configuration actuelle.</li>
         </ul>
         <h3 id="onglet-donnees">Données</h3>
         <p>Affiche le tableau brut importé, avec défilement et recherche dans les lignes. Les colonnes sont élargies pour une meilleure lisibilité ; en-têtes alignés avec le corps du tableau.</p>
@@ -422,13 +424,14 @@
         <p>Sous les filtres d'une pile <strong>ou d'un calcul/compteur/analyse</strong>, cliquez <kbd>Afficher le résultat</kbd> pour voir le tableau des lignes retenues (actualisation manuelle pour de meilleures performances).
         Le bouton <kbd>Exporter XLSX</kbd> télécharge les lignes filtrées.</p>
         <h3>Rapport détaillé PDF</h3>
-        <p>Bouton <kbd>Générer un rapport détaillé</kbd> dans l'<strong>en-tête</strong> (à côté de « Exporter rapport PDF ») ouvre une modale :</p>
+        <p>Onglet <kbd>Rapport détaillé</kbd> (après Mise en page) :</p>
         <ul>
           <li>Titre et description du rapport</li>
           <li>Couleur d'accent (défaut : bleu #235da9, ou couleur de l'onglet Mise en page)</li>
-          <li>Sélection des piles et calculs à inclure, avec réordonnancement ↑ ↓</li>
+          <li>Sélection des piles et calculs via <strong>boutons</strong> (actif / inactif), avec réordonnancement ↑ ↓</li>
           <li>Tout sélectionner / tout désélectionner</li>
-          <li>Choix des colonnes à afficher dans les tableaux de détail</li>
+          <li>Choix des colonnes à afficher dans les tableaux de détail (listes défilantes)</li>
+          <li>Les réglages sont enregistrés automatiquement ; l'export PDF se fait via <kbd>Export PDF</kbd> en en-tête</li>
         </ul>
         <p>Le PDF généré contient :</p>
         <ol>
@@ -630,14 +633,15 @@
 
       <section id="rapport-rapide" data-keywords="rapport rapide wizard assistant preset global xlsx période pdf guidé filtres globaux">
         <h2>Rapport rapide</h2>
-        <p>Assistant en <strong>6 étapes</strong> (menu ☰ → <kbd>Rapport rapide</kbd>) pour produire un ou plusieurs PDF sans configurer manuellement l'application :</p>
+        <p>Assistant en <strong>6 étapes</strong> (en-tête → <kbd>Rapport rapide</kbd>) pour produire un ou plusieurs PDF :</p>
         <ol class="steps">
-          <li><strong>Données</strong> — sélectionnez le fichier source .xlsx ou .csv.</li>
-          <li><strong>Preset global</strong> — chargez un JSON ou .json.gz ; l'import utilise la section <em>import</em>, puis applique filtres, graphiques et mise en page.</li>
-          <li><strong>Filtres globaux</strong> — choisissez les piles marquées « Rap. rapide » dans Filtre global. <em>L'application d'un seul filtre est recommandée.</em> Seules les piles cochées restent actives pour le PDF.</li>
-          <li><strong>Période</strong> — plage de dates PDF (isolée de l'onglet Valeurs), récapitulatif graphiques, nom du document (défaut : <code>[preset] - [filtre]</code>).</li>
-          <li><strong>Génération PDF</strong> — cochez les exports souhaités (préremplis depuis la section preset <em>quickReport</em>) : rapport principal, PDF occurrences, détail des filtres, rapport détaillé filtre courant.</li>
-          <li><strong>Terminé</strong> — récapitulatif des PDF générés ou ignorés ; chaque fichier porte en suffixe le nom des piles globales actives.</li>
+          <li><strong>Données</strong> — utiliser le tableau actuel ou importer un fichier .xlsx / .csv.</li>
+          <li><strong>Preset global</strong> — utiliser le preset actuel ou en importer un nouveau ; applique import, filtres, graphiques et mise en page.</li>
+          <li><strong>Génération PDF</strong> — cochez les exports souhaités (préremplis depuis la section preset <em>quickReport</em>).</li>
+          <li><strong>Filtres globaux</strong> — choisissez les piles marquées « Rap. rapide ». <em>Un seul filtre est recommandé.</em></li>
+          <li><strong>Période</strong> — plage de dates PDF (isolée de l'onglet Valeurs).</li>
+          <li><strong>Paramètres rapport</strong> — titres par PDF (défaut : <code>[preset] - [filtre]</code>), descriptions, aperçu récurrence.</li>
+          <li><strong>Terminé</strong> — récapitulatif ; chaque fichier porte en suffixe le nom des piles globales actives. Les réglages appliqués restent en place après fermeture.</li>
         </ol>
         <div class="tip">
           <strong>Prérequis</strong>
@@ -647,9 +651,32 @@
         <div class="note">La période du wizard n'altère pas l'onglet Valeurs. Voir aussi <a href="#pas-a-pas-rapport-rapide">Exemple pas à pas — Rapport rapide</a> et <code>RAPPORT_RAPIDE_PROCEDURE.txt</code>.</div>
       </section>
 
+      <section id="rapport-detaille-onglet" data-keywords="rapport détaillé onglet filtre courant colonnes éléments boutons">
+        <h2>Onglet Rapport détaillé</h2>
+        <p>Configurez le PDF filtre courant sans quitter l'application. L'export se fait via <kbd>Export PDF</kbd> en en-tête.</p>
+        <ul>
+          <li><strong>Titre et description</strong> — affichés en page de garde du PDF.</li>
+          <li><strong>Couleur d'accent</strong> — en-têtes de tableaux dans le PDF.</li>
+          <li><strong>Colonnes à afficher</strong> — boutons toggle ; liste défilante si beaucoup de colonnes.</li>
+          <li><strong>Éléments du rapport</strong> — piles et calculs du filtre courant ; boutons toggle, ordre ↑ ↓ ; liste défilante.</li>
+        </ul>
+        <p>La configuration est mémorisée par tableau et exportable via preset global (section <em>currentFilterReport</em>).</p>
+      </section>
+
+      <section id="rapport-occurrence-onglet" data-keywords="rapport occurrence récurrence outils excel transformation merge séparateur">
+        <h2>Onglet Rapport d'occurrence</h2>
+        <p>Remplace l'ancienne modale « Outils de transformation Excel ». Prépare des données et analyse les récurrences :</p>
+        <ul>
+          <li><strong>Source</strong> — import compact (.xlsx / .csv) ou pile filtre courant ; le tableau actif est chargé automatiquement.</li>
+          <li><strong>Pipeline</strong> — merge, séparateur, compteur d'occurrences, filtre date.</li>
+          <li><strong>Export</strong> — résultat .xlsx / .csv ou PDF récurrence (également via <kbd>Export PDF</kbd> en en-tête).</li>
+        </ul>
+        <p>L'onglet est entièrement défilable pour accéder à toutes les fonctions. Voir aussi <a href="#outils-excel">Outils Excel</a>.</p>
+      </section>
+
       <section id="outils-excel" data-keywords="outils excel transformation merge séparateur occurrences filtre date csv preset">
         <h2>Outils de transformation Excel</h2>
-        <p>Menu ☰ → <kbd>Outils de transformation Excel</kbd> ouvre une modale plein écran intégrée à App Stats pour préparer des fichiers <strong>.xlsx</strong> ou <strong>.csv</strong> <em>avant</em> import dans l'application :</p>
+        <p>Onglet <kbd>Rapport d'occurrence</kbd> (après Rapport détaillé) pour préparer des fichiers <strong>.xlsx</strong> ou <strong>.csv</strong> et analyser les récurrences :</p>
         <ul>
           <li><strong>Import</strong> — glisser-déposer ou parcourir (.xlsx / .csv), ou choisir une <strong>pile filtre courant</strong> dans la liste déroulante (résultat filtré de la pile).</li>
           <li><strong>Filtre date à l'import</strong> — optionnel, sur une colonne date : par <strong>année</strong> (défaut = année courante) ou par <strong>plage début / fin</strong>.</li>
@@ -669,7 +696,14 @@
 
       <section id="pdf" data-keywords="pdf rapport export imprimer graphique multiple layout accent détaillé">
         <h2>Rapport PDF</h2>
-        <p><kbd>Exporter rapport PDF</kbd> (en-tête) génère une page d'impression selon l'<strong>ordre des blocs</strong> défini dans l'onglet <a href="#mise-en-page">Mise en page</a> :</p>
+        <p><kbd>Export PDF</kbd> (en-tête) ouvre une modale pour choisir et générer un ou plusieurs PDF :</p>
+        <ul>
+          <li><strong>Rapport PDF principal</strong> — tableau Valeurs + graphiques selon Mise en page (plage de l'onglet Valeurs).</li>
+          <li><strong>PDF occurrences</strong> — récurrence depuis l'onglet Rapport d'occurrence (étape pipeline active).</li>
+          <li><strong>PDF détail des filtres</strong> — synthèse global, courant, mensuel.</li>
+          <li><strong>PDF rapport détaillé filtre courant</strong> — configuration de l'onglet Rapport détaillé.</li>
+        </ul>
+        <p>Le rapport principal suit l'<strong>ordre des blocs</strong> défini dans l'onglet <a href="#mise-en-page">Mise en page</a> :</p>
         <ol>
           <li><strong>Tableau des valeurs</strong> — plage de l'onglet Valeurs, lignes cochées PDF uniquement.</li>
           <li><strong>Graphiques</strong> — pour chacun : titre, légende, mini-tableau (cases PDF graphique), image.</li>
@@ -677,9 +711,8 @@
           <li><strong>Sauts de page</strong> — entre blocs si configurés.</li>
         </ol>
         <p>La <strong>couleur d'accent</strong> (défaut #235da9) colore les en-têtes de tableaux. Les graphiques sont rendus automatiquement à l'export.</p>
-        <p><strong>Nom de fichier</strong> — tous les PDF générés (rapport principal, détail filtres, rapport détaillé, occurrences) ajoutent en suffixe le nom des <strong>piles globales actives</strong>, par ex. <code>Rapport — MonTableau - Pile A, Pile B.pdf</code>.</p>
-        <p>Menu ☰ → <kbd>Détail des filtres (PDF)</kbd> produit un PDF récapitulatif de l'ensemble des filtres (global, courant, mensuel).</p>
-        <p>Le <strong>rapport détaillé filtre courant</strong> (<kbd>Générer un rapport détaillé</kbd> en en-tête) est un PDF séparé — voir <a href="#filtre-courant">Filtre courant</a> et <a href="#pas-a-pas-rapport-detaille">Exemple pas à pas</a>.</p>
+        <p><strong>Nom de fichier</strong> — tous les PDF générés ajoutent en suffixe le nom des <strong>piles globales actives</strong>, par ex. <code>Rapport — MonTableau - Pile A, Pile B.pdf</code>.</p>
+        <p>Le <strong>rapport détaillé filtre courant</strong> se configure dans l'onglet <a href="#rapport-detaille-onglet">Rapport détaillé</a> — voir aussi <a href="#filtre-courant">Filtre courant</a>.</p>
       </section>
 
       <section id="faq" data-keywords="faq question problème aide erreur">
@@ -694,15 +727,15 @@
         </details>
         <details class="faq-item">
           <summary>Comment générer un rapport détaillé des filtres courants ?</summary>
-          <p>En-tête → <kbd>Générer un rapport détaillé</kbd>. Sélectionnez piles/calculs, colonnes et couleur, puis téléchargez le PDF.</p>
+          <p>Onglet <kbd>Rapport détaillé</kbd> pour configurer titre, éléments et colonnes. Puis en-tête → <kbd>Export PDF</kbd> → cochez « Rapport détaillé filtre courant ».</p>
         </details>
         <details class="faq-item">
           <summary>Comment utiliser le rapport rapide ?</summary>
-          <p>Menu ☰ → Rapport rapide. Données → preset global → choix des filtres globaux (Rap. rapide) → période et nom du document → sélection des PDF à générer → récapitulatif.</p>
+          <p>En-tête → <kbd>Rapport rapide</kbd>. Données (actuelles ou nouveau fichier) → preset → choix des PDF → filtres globaux → période → paramètres → génération.</p>
         </details>
         <details class="faq-item">
           <summary>Le rapport rapide s'ouvre-t-il au démarrage ?</summary>
-          <p>Non : ouvrez-le via le menu burger lorsque vous en avez besoin.</p>
+          <p>Non : ouvrez-le via le bouton en en-tête lorsque vous en avez besoin.</p>
         </details>
         <details class="faq-item">
           <summary>Pourquoi l'onglet Valeurs est vide ?</summary>
